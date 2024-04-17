@@ -1,0 +1,22 @@
+{% extends "base.html.j2" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block app_content %}
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+      下拉菜單
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <li><a class="dropdown-item" href="#">選項1</a></li>
+      <li><a class="dropdown-item" href="#">選項2</a></li>
+      <li><a class="dropdown-item" href="#">選項3</a></li>
+    </ul>
+  </div>
+</body>
+</html>
+{% endblock %}
