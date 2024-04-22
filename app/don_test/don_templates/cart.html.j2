@@ -1,0 +1,13 @@
+{% for item in cart_items %}
+    <div>
+        <h3>{{item.product.name}}</h3>
+        <p>Quantity:{{item.quantity}}</p>
+        <form action = "{{url_for('updata_cart',producr_id = item.product.id)}}"method = "post">
+            <input type="number" name="quantity" value="{{item.quanity}}">
+            <button type="submit"> Update</button>
+        </form>
+        <form action="{{url_for('remove_from_cart',product_id=item.product.id)}}"method = "post">
+            <button type="submit"> Remove</button>
+        </form>
+    </div>
+{% endfor %}
