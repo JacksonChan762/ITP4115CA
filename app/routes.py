@@ -236,7 +236,7 @@ def add_product():
             img.save(thumbnail_path)
 
            
-            new_product = Product(name=name, price=float(price), image_filename=filename)
+            new_product = Product(name=name, price=float(price), image_filename=filename , description=description)
             db.session.add(new_product)
             db.session.commit()
 
@@ -279,7 +279,7 @@ def shopping_cart():
     user_id = session.get('user_id')
     cart = Cart.query.filter_by(user_id=int(user_id)).order_by(Cart.addtime.desc()).all()
     total = sum([item.product.price * item.number for item in cart])
-    return render_template('shopping_cart.html.j2', cart=cart)
+    return render_template('shopping_cart.html.j2', cart=cart , total=total)
 
 
 # 删除购物车
