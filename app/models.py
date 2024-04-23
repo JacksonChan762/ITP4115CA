@@ -1,9 +1,8 @@
 
 from datetime import datetime, timedelta, timezone
 from hashlib import md5
-from app import app, db, login
-import jwt
-
+from app import app, db, login 
+from .config import Config
 from flask_login import UserMixin
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -92,34 +91,27 @@ class Post(db.Model):
         return f'<Post {self.body}>'
 
 # 建立一個新的關聯表
-orders_products = db.Table('orders_products',
-    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
-    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True)
-)
-
-class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    products = db.relationship('Product', backref='category', lazy='dynamic')
 
 class Product(db.Model):
+    __tablename__ = 'product'
+    id = db.Column(db.Integer, primary_key=True)  
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    description = db.Column(db.Text)
+    image_filename = db.Column(db.String(120), nullable=True) 
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)  
+    cart = db.relationship("Cart", backref='product')    
+    def __repr__(self):
+        return f'<Product {self.name}>'
+
+class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    price = db.Column(db.Float)  # 新增的價格欄位
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))  # 新增的類別欄位
-    orders = db.relationship('Order', secondary=orders_products, backref=db.backref('products', lazy='dynamic'))
+    user_id = db.Column(db.Integer, nullable=False)
+    number = db.Column(db.Integer, default=0)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    addtime = db.Column(db.DateTime, default=datetime.utcnow)
+    quantity = db.Column(db.Integer)
 
-class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
-    def add_product(self, product):
-        if not self.is_product_added(product):
-            self.products.append(product)
-    
-    def remove_product(self, product):
-        if self.is_product_added(product):
-            self.products.remove(product)
-
-    def is_product_added(self, product):
-        return self.products.filter(orders_products.c.product_id == product.id).count() > 0
+    def __repr__(self):
+        return "<Cart %r>" % self.id
     
