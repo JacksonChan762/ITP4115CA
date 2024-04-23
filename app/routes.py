@@ -6,7 +6,7 @@ from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart 
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail
 from werkzeug.utils import secure_filename
 from PIL import Image
 import jinja2
@@ -57,12 +57,13 @@ def login():
             flash(_('Invalid username or password'))
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
+        # 將 user_id 存入 session
+        session['user_id'] = user.id
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
     return render_template('login.html.j2', title=_('Sign In'), form=form)
-
 
 @app.route('/logout')
 def logout():
@@ -190,10 +191,7 @@ def format_currency(value):
     except (TypeError, ValueError) as e:
         return "Error: Invalid input"
     
-@app.route('/update_quantity/<int:id>/<int:quantity>', methods=['POST'])
-def update_quantity(id, quantity):
-    # 更新數量的代碼在這裡
-    ...
+
 
 
 @app.route('/products')
@@ -257,7 +255,7 @@ def cart_add():
     cart = Cart(
         product_id=request.args.get('product_id'),
         number=request.args.get('number'),
-        user_id=session.get('user_id', 0)  # 获取用户ID,判断用户是否登录
+        user_id=session.get('user_id')  # 获取用户ID,判断用户是否登录
     )
     db.session.add(cart)  # 添加数据
     db.session.commit()  # 提交数据
@@ -268,7 +266,7 @@ def cart_add():
 @app.route("/cart_clear/")
 @login_required
 def cart_clear():
-    user_id = session.get('user_id', 0)  # 获取用户ID,判断用户是否登录
+    user_id = session.get('user_id')  # 获取用户ID,判断用户是否登录
     Cart.query.filter_by(user_id=user_id).delete()
     db.session.commit()
     return redirect(url_for('shopping_cart'))
@@ -278,8 +276,9 @@ def cart_clear():
 @app.route("/shopping_cart/")
 @login_required
 def shopping_cart():
-    user_id = session.get('user_id', 0)
+    user_id = session.get('user_id')
     cart = Cart.query.filter_by(user_id=int(user_id)).order_by(Cart.addtime.desc()).all()
+    total = sum([item.product.price * item.number for item in cart])
     return render_template('shopping_cart.html.j2', cart=cart)
 
 
@@ -287,14 +286,95 @@ def shopping_cart():
 @app.route("/cart_delete/<int:id>/")
 @login_required
 def cart_delete(id=None):
-    user_id = session.get('user_id', 0)  # 获取用户ID,判断用户是否登录
+    user_id = session.get('user_id')  # 获取用户ID,判断用户是否登录
     db.session.delete(Cart.query.filter_by(user_id=user_id, product_id=id).first())
     db.session.commit()
     return redirect(url_for('shopping_cart'))
 
 
 
-
-
-
+# 购物车添加订单
+@app.route("/cart_order/", methods=['GET', 'POST'])
+@login_required
+def cart_order():
     
+    if request.method == 'POST':
+        user_id = session.get('user_id')  # 获取用户id
+        # 添加订单
+        orders = Orders(
+            user_id=user_id,
+        )
+        db.session.add(orders)  # 添加数据
+        db.session.commit()  # 提交数据_
+        # 添加订单详情
+        cart = Cart.query.filter_by(user_id=user_id).all()
+        object = []
+        for item in cart:
+            object.append(
+                OrdersDetail(
+                    order_id=orders.id,
+                    product_id=item.product_id,
+                    number=item.number, )
+            )
+        db.session.add_all(object)
+        # 更改购物车状态
+        Cart.query.filter_by(user_id=user_id).update({'user_id':0})
+        db.session.commit()
+    return redirect(url_for('order_list'))
+
+# 查看我的订单
+@app.route("/order_list", methods=['GET', 'POST'])
+@login_required
+def order_list():
+    user_id = session.get('user_id', 0)
+    orders = OrdersDetail.query.join(Orders).filter(Orders.user_id == user_id).order_by(Orders.addtime.desc()).all()
+    return render_template('order_list.html.j2', orders=orders)
+
+
+# 收藏与取消收藏商品
+@app.route("/collect_add/")
+@login_required
+def collect_add():
+    product_id = request.args.get("product_id", "")  # 接收传递的参数
+    user_id = session.get('user_id', 0)  # 获取当前用户的ID
+    collect = Collect.query.filter_by(  # 根据用户ID和商品ID判断是否该收藏
+        user_id=int(user_id),
+        product_id=int(product_id)
+    ).count()
+
+    # 已收藏,取消收藏
+    if collect == 1:
+        c = Collect.query.filter_by(product_id=product_id, user_id=user_id).first()  # 查找Collect表，查看记录是否存在
+        db.session.delete(c)  # 删除数据
+        db.session.commit()  # 提交数据
+        return redirect(url_for('product_detail', product_id=product_id))
+
+    # 未收藏进行收藏
+    if collect == 0:
+        collect = Collect(
+            user_id=int(user_id),
+            product_id=int(product_id)
+        )
+        db.session.add(collect)  # 添加数据
+        db.session.commit()  # 提交数据
+        return redirect(url_for('product_detail', product_id=product_id) )
+    
+
+# 查看收藏列表
+@app.route("/collect_list")
+@login_required
+def collect_list():
+    user_id = session.get('user_id', 0)
+    collects = Collect.query.filter_by(user_id=int(user_id)).order_by(Collect.addtime.desc()).all()
+    return render_template('collect_list.html.j2', collects=collects)
+
+
+
+# 删除收藏
+@app.route("/collect_delete/<int:id>/")
+@login_required
+def collect_delete(id=None):
+    user_id = session.get('user_id', 0)  # 获取用户ID,判断用户是否登录
+    db.session.delete(Collect.query.filter_by(user_id=user_id, product_id=id).first())
+    db.session.commit()
+    return redirect(url_for('collect_list'))

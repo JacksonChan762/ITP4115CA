@@ -23,6 +23,7 @@ class User(UserMixin, db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    orders = db.relationship('Orders', backref='user') 
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
@@ -100,7 +101,9 @@ class Product(db.Model):
     description = db.Column(db.Text)
     image_filename = db.Column(db.String(120), nullable=True) 
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)  
-    cart = db.relationship("Cart", backref='product')    
+    cart = db.relationship("Cart", backref='product')   
+    collect = db.relationship("Collect", backref='poods') # 订单外键关系关联
+    orders_detail = db.relationship("OrdersDetail", backref='product')  # 订单外键关系关联
     def __repr__(self):
         return f'<Product {self.name}>'
 
@@ -115,3 +118,33 @@ class Cart(db.Model):
     def __repr__(self):
         return "<Cart %r>" % self.id
     
+
+class Collect(db.Model):
+    __tablename__ = 'collect'
+    id = db.Column(db.Integer, primary_key=True)  # 编号
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))  # 所屬商品
+    product = db.relationship('Product')  # 添加這行
+    user_id = db.Column(db.Integer)  # 所属用户
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)  # 添加时间
+
+    def __repr__(self):
+        return "<Collect %r>" % self.id
+
+
+class Orders(db.Model):
+    __tablename__ = 'orders'
+    id = db.Column(db.Integer, primary_key=True)  # 编号
+    user_id = db.Column((db.Integer), db.ForeignKey('user.id')) # 所属用户
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)  # 添加时间
+    orders_detail = db.relationship("OrdersDetail", backref='orders')  # 外键关系关联
+
+    def __repr__(self):
+        return "<Orders %r>" % self.id
+
+
+class OrdersDetail(db.Model):
+    __tablename__ = 'orders_detail'
+    id = db.Column(db.Integer, primary_key=True)  # 编号
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))  # 所属商品
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))  # 所属订单
+    number = db.Column(db.Integer, default=0)  # 购买数量
