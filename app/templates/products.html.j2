@@ -11,10 +11,19 @@
                     <img src="{{ url_for('static', filename='thumbnails/' + product.image_filename) }}" alt="{{ product.name }}">
                     <p>{{ product.description }}</p>
                     <p><strong>Price:</strong> ${{ product.price }}</p>
+                    
+                    <!-- Product Details Link -->
                     <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
-                    <a href="{{ url_for('cart_add', product_id=product.id) }}" class="btn btn-success">Add to Cart</a>
                     
-                    
+                    <!-- Form to Add to Cart and Specify Quantity using GET -->
+              <form action="{{ url_for('cart_add') }}" method="get">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="number" name="number" value="1" min="1" class="form-control" placeholder="Quantity" aria-label="Quantity">
+                <div class="input-group-append">
+                    <button class="btn btn-success" type="submit">Add to Cart</button>
+                    </div>
+                </div>
+            </form>
                 </div>
             </div>
             {% endfor %}
