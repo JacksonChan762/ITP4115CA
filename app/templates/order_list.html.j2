@@ -1,12 +1,20 @@
-{% extends "base.html.j2" %}
-{% block app_content %}
-<ul class="order-list">
-  {% for order in orders %}
-  <li>
-    <p>Order ID: {{ order.id }}</p>
-    <p>Product ID: {{ order.products_id }}</p>
-    <p>Quantity: {{ order.number }}</p>
-  </li>
-  {% endfor %}
-</ul>
-{% endblock %}
+{% extends "base.html.j2" %}  {# 继承自 base.html.j2 文件的模板 #}
+
+{% block app_content %}  {# 开始定义一个名为 app_content 的块 #}
+  <div class="order-list-container">
+    <h2>Order List</h2>
+    {% if orders %}
+      <ul>
+        {% for order in orders %}
+          <li>
+            <h3>Order #{{ order.id }}</h3>
+            <p>Order Date: {{ order.orders.addtime.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <!-- 假设订单详细信息在 order.details 属性中 -->
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No orders found.</p>
+    {% endif %}
+  </div>
+{% endblock %}  {# 结束 app_content 块的定义 #}
