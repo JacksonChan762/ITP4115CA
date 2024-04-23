@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empty Shopping Cart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Shopping Cart is Empty</h1>
+        <p>Looks like you haven't added anything to your cart yet!</p>
+        <div>
+            <a href="{{ url_for('index') }}">Start Shopping</a>
+        </div>
+    </div>
+</body>
+</html>
