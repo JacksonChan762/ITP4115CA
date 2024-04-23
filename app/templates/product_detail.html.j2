@@ -1,0 +1,9 @@
+{% extends "base.html.j2" %}
+{% block app_content %}
+<div class="product-detail">
+  <h2>{{ product.name }}</h2>
+  <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}" alt="{{ product.name }}">
+  <p>{{ product.description }}</p>
+  <h3>Price: ${{ product.price }}</h3>
+</div>
+{% endblock %}

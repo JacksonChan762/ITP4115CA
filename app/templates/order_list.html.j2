@@ -1,0 +1,12 @@
+{% extends "base.html.j2" %}
+{% block app_content %}
+<ul class="order-list">
+  {% for order in orders %}
+  <li>
+    <p>Order ID: {{ order.id }}</p>
+    <p>Product ID: {{ order.products_id }}</p>
+    <p>Quantity: {{ order.number }}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

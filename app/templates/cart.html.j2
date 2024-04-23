@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Shopping Cart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Shopping Cart</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>
+                            {% if item.quantity is not none %}
+                                <a href="{{ url_for('update_quantity', id=item.id, quantity=item.quantity-1) }}">-</a>
+                            {% else %}
+                                <a href="{{ url_for('update_quantity', id=item.id, quantity=0) }}">-</a>
+                            {% endif %}
+                        </td>
+                        <td>${{ item.price | format_currency }}</td>
+                        <td>${{ (item.price * product.quantity) | format_currency }}</td>
+                        <td>
+                            <a href="{{ url_for('remove_from_cart', id=item.id) }}">Remove</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</body>
+</html>
