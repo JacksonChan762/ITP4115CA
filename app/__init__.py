@@ -12,10 +12,14 @@ from flask_moment import Moment
 from flask_babel import Babel
 
 
+
+
+
+
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db )
 login = LoginManager()
 login.login_view = "login"
 login.init_app(app)
@@ -24,6 +28,13 @@ bootstrap = Bootstrap(app)
 moment = Moment(app)
 babel = Babel(app)
 
+##add photo
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 限制文件大小為16MB
+app.config['SECRET_KEY'] = 'your_secret_key'  # 用於 session 管理和消息閃現
+filepath = 'my_directory/my_file.txt'
 if not app.debug:
     root = logging.getLogger()
     if app.config["MAIL_SERVER"]:
@@ -53,6 +64,13 @@ if not app.debug:
     root.info('Microblog startup')
 
 
+app.config.from_mapping(
+    SECRET_KEY='dev',
+    DATABASE=os.path.join(app.instance_path, 'database.sqlite'),
+    UPLOAD_FOLDER= os.path.join(app.static_folder, 'uploads'),
+    THUMBNAIL_FOLDER=os.path.join(app.static_folder, 'thumbnails'),
+    ALLOWED_EXTENSIONS=set(['.png', '.jpg', '.jpeg', '.gif']),
+)
 
 # You must keep the routes at the end.
 from app import routes, errors
