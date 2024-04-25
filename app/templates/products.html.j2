@@ -1,35 +1,26 @@
 {% extends "base.html.j2" %}
 {% block app_content %}
-<div class="products-list">
-    <h2>Our Products</h2>
-    {% if products %}
-        <div class="row">
-            {% for product in products %}
-            <div class="col-md-4">
-                <div class="product-item">
-                    <h3>{{ product.name }}</h3>
-                    <img src="{{ url_for('static', filename='thumbnails/' + product.image_filename) }}" alt="{{ product.name }}">
-                    <p>{{ product.description }}</p>
-                    <p><strong>Price:</strong> ${{ product.price }}</p>
-                    
-                    <!-- Product Details Link -->
-                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
-                    
-                    <!-- Form to Add to Cart and Specify Quantity using GET -->
-              <form action="{{ url_for('cart_add') }}" method="get">
+<div class="product-list">
+  {% for supercat in supercats %}
+    <h2>{{ supercat.cat_name }}</h2>
+    {% for subcat in supercat.subcats %}
+      <h3>{{ subcat.cat_name }}</h3>
+      {% for product in subcat.products %}
+        <div class="product">
+          <h4>{{ product.name }}</h4>
+          <img src="{{ url_for('static', filename='thumbnails/' + product.image_filename) }}" alt="{{ product.name }}">
+          <p>{{ product.description }}</p>
+          <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-success">View Details</a>
+          <a href="{{ url_for('product_delete', id=product.id) }}" class="btn btn-danger">Delete</a>
+          <a href="{{ url_for('product_edit', id=product.id) }}" class="btn btn-primary">Edit</a>
+            <form action="{{ url_for('cart_add') }}" method="get">
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <input type="number" name="number" value="1" min="1" class="form-control" placeholder="Quantity" aria-label="Quantity">
                 <div class="input-group-append">
                     <button class="btn btn-success" type="submit">Add to Cart</button>
-                    </div>
-                </div>
-            </form>
-                </div>
-            </div>
-            {% endfor %}
         </div>
-    {% else %}
-        <p>No products found.</p>
-    {% endif %}
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
 </div>
 {% endblock %}

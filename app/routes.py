@@ -1,12 +1,12 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request, g ,flash ,session
+from flask import render_template, flash, redirect, url_for, request, g ,flash ,session,jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop ,Inventory, Reviews ,discount
 from werkzeug.utils import secure_filename
 from PIL import Image
 import jinja2
@@ -196,8 +196,8 @@ def format_currency(value):
 
 @app.route('/products')
 def products():
-    products = Product.query.all()
-    return render_template('products.html.j2', products=products)  # 確保模板名稱正確
+    supercats = SuperCat.query.all()
+    return render_template('products.html.j2', supercats=supercats)
 
 
 # 當您需要顯示產品詳情時，可以添加一個路由
@@ -214,39 +214,103 @@ def allowed_file(filename):
 @app.route('/add-product', methods=['GET', 'POST'])
 def add_product():
     if request.method == 'POST':
-       
+        # 提取表單數據
         name = request.form['name']
         price = request.form['price']
         description = request.form['description']
         image_file = request.files['image']
-        
+        supercat_id = int(request.form['supercat_id'])
+        subcat_id = int(request.form['subcat_id'])
+
         if image_file.filename == '':
-            flash('No selected file')
+            flash('未選擇文件')
             return redirect(request.url)
-        
+
         if image_file and allowed_file(image_file.filename):
             filename = secure_filename(image_file.filename)
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image_file.save(image_path)
 
-           
+            # 調整圖片大小並保存縮略圖
             img = Image.open(image_path)
-            img.thumbnail((128, 128))  # Resize the image
+            img.thumbnail((128, 128))
             thumbnail_path = os.path.join(app.config['THUMBNAIL_FOLDER'], filename)
             img.save(thumbnail_path)
 
-           
-            new_product = Product(name=name, price=float(price), image_filename=filename , description=description)
+            # 創建新的產品實例
+            new_product = Product(
+                name=name,
+                price=float(price),
+                description=description,
+                image_filename=filename,
+                supercat_id=supercat_id,
+                subcat_id=subcat_id
+            )
             db.session.add(new_product)
             db.session.commit()
 
-            flash('Product added successfully!')
+            flash('產品成功添加！')
             return redirect(url_for('index'))
-        
-    return render_template('add_product.html.j2')
-        
 
+    return render_template('add_product.html.j2', categories=SubCat.query.distinct(SubCat.super_cat_id).all())
 
+@app.route('/get-subcategories/<int:supercat_id>')
+def get_subcategories(supercat_id):
+    subcats = SubCat.query.filter_by(super_cat_id=supercat_id).all()
+    subcat_list = [{'id': subcat.id, 'name': subcat.cat_name} for subcat in subcats]
+    return jsonify(subcat_list)
+
+@app.route('/supercat/add/', methods=['GET', 'POST'])
+def supercat_add():
+    if request.method == 'POST':
+        cat_name = request.form.get('cat_name')
+        supercat = SuperCat(cat_name=cat_name)
+        db.session.add(supercat)
+        db.session.commit()
+        return redirect(url_for('supercat_list'))
+    return render_template('supercat_add.html.j2')
+
+@app.route('/supercat/del/', methods=['POST'])
+def supercat_del():
+    id = request.form.get('id')
+    supercat = SuperCat.query.get(id)
+    if supercat:
+        db.session.delete(supercat)
+        db.session.commit()
+    return redirect(url_for('supercat_list'))
+
+@app.route("/supercat/list/", methods=["GET"])
+def supercat_list():
+    supercats = SuperCat.query.all()
+    return render_template('supercat_list.html.j2', supercats=supercats)
+
+@app.route("/subcat/list/", methods=["GET"])
+def subcat_list():
+    subcats = SubCat.query.all()
+    return render_template('subcat_list.html.j2', subcats=subcats)
+
+@app.route('/subcat/add/', methods=["GET", "POST"])
+def subcat_add():
+    supercats = SuperCat.query.all()
+    subcats = SubCat.query.all()
+    if request.method == "POST":
+        cat_name = request.form.get("cat_name")
+        super_cat_id = request.form.get("super_cat_id")
+        subcat = SubCat(cat_name=cat_name, super_cat_id=super_cat_id)
+        db.session.add(subcat)
+        db.session.commit()
+        return redirect(url_for('subcat_list'))
+    return render_template('subcat_add.html.j2', supercats=supercats , subcats=subcats)
+
+@app.route("/subcat/del/", methods=["POST"])
+def subcat_del():
+    id = request.form.get("id")
+    subcat = SubCat.query.get(id)
+    if subcat:
+        db.session.delete(subcat)
+        db.session.commit()
+    return redirect(url_for('subcat_list'))
+    
 
 # 添加购物车
 @app.route("/cart_add/")
@@ -310,14 +374,16 @@ def cart_order():
         cart = Cart.query.filter_by(user_id=user_id).all()
         object = []
         for item in cart:
+            product = Product.query.get(item.product_id)
             object.append(
                 OrdersDetail(
                     order_id=orders.id,
                     product_id=item.product_id,
-                    number=item.number, )
+                    order_name=product.name,  # 從 Product 模型中獲取產品名稱
+                    number=item.number,  # 從 Cart 模型中獲取數量
+                )
             )
         db.session.add_all(object)
-        # 更改购物车状态
         Cart.query.filter_by(user_id=user_id).update({'user_id':0})
         db.session.commit()
     return redirect(url_for('order_list'))
@@ -330,6 +396,11 @@ def order_list():
     orders = OrdersDetail.query.join(Orders).filter(Orders.user_id == user_id).order_by(Orders.addtime.desc()).all()
     return render_template('order_list.html.j2', orders=orders)
 
+@app.route("/order_detail/<int:id>/")
+@login_required
+def order_detail(id=None):
+    orders = OrdersDetail.query.filter_by(order_id=id).all()
+    return render_template('order_detail.html.j2', orders=orders)
 
 # 收藏与取消收藏商品
 @app.route("/collect_add/")
@@ -360,6 +431,7 @@ def collect_add():
         return redirect(url_for('product_detail', product_id=product_id) )
     
 
+
 # 查看收藏列表
 @app.route("/collect_list")
 @login_required
@@ -378,3 +450,72 @@ def collect_delete(id=None):
     db.session.delete(Collect.query.filter_by(user_id=user_id, product_id=id).first())
     db.session.commit()
     return redirect(url_for('collect_list'))
+
+@app.route("/product_delete/<int:id>/")
+@login_required
+def product_delete(id=None):
+    product = Product.query.get_or_404(id)
+    db.session.delete(product)
+    db.session.commit()
+    return redirect(url_for('products'))
+
+
+@app.route("/product_edit/<int:id>/", methods=['GET', 'POST'])
+@login_required
+def product_edit(id=None):
+    product = Product.query.get_or_404(id)
+    if request.method == 'POST':
+        product.name = request.form.get('name')
+        product.price = request.form.get('price')
+        product.description = request.form.get('description')
+        product.supercat_id = request.form.get('supercat_id')
+        product.subcat_id = request.form.get('subcat_id')
+        db.session.commit()
+        return redirect(url_for('products'))
+    return render_template('product_edit.html.j2', product=product, categories=SubCat.query.distinct(SubCat.super_cat_id).all())
+
+
+
+
+
+@app.route('/shop')
+def shops():
+    # 從數據庫中查詢所有的 Shop 紀錄
+    shops = Shop.query.all()
+    # 將查詢結果傳遞給模板
+    return render_template('shop.html.j2', shop=shops)
+
+@app.route('/shop/add/', methods=['GET', 'POST'])
+def shop_add():
+    if request.method == 'POST':
+        desc = request.form.get('desc')
+        tel = request.form.get('tel')
+        email = request.form.get('email')
+        address = request.form.get('address')
+        shop = Shop(desc=desc, tel=tel, email=email, address=address)
+        db.session.add(shop)
+        db.session.commit()
+        return redirect(url_for('shops'))
+    return render_template('shop_add.html.j2')
+
+@app.route('/shop/del/', methods=['POST'])
+def shop_del():
+    id = request.form.get('id')
+    shop = Shop.query.get(id)
+    if shop:
+        db.session.delete(shop)
+        db.session.commit()
+    return redirect(url_for('shops'))
+
+@app.route('/shop/edit/<int:id>/', methods=['GET', 'POST'])
+def shop_edit(id):
+    shop = Shop.query.get_or_404(id)
+    if request.method == 'POST':
+        shop.desc = request.form.get('desc')
+        shop.tel = request.form.get('tel')
+        shop.email = request.form.get('email')
+        shop.address = request.form.get('address')
+        db.session.commit()
+        return redirect(url_for('shops'))
+    return render_template('shop_edit.html.j2', shop=shop)
+

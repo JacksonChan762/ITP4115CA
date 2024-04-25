@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Edit Product</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ product.name }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="text" class="form-control" id="price" name="price" value="{{ product.price }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ product.description }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="supercat_id" class="form-label">Supercategory</label>
+                <select class="form-control" id="supercat_id" name="supercat_id" onchange="loadSubcategories()">
+                    {% for category in categories %}
+                    <option value="{{ category.super_cat_id }}" {% if category.super_cat_id == product.supercat_id %} selected {% endif %}>{{ category.super_cat_id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="subcat_id" class="form-label">Subcategory</label>
+                <select class="form-control" id="subcat_id" name="subcat_id">
+                    <!-- Subcategories options will be loaded here -->
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+
+    <script>
+        function loadSubcategories() {
+            const supercatId = $('#supercat_id').val();
+            $.ajax({
+                url: `/get-subcategories/${supercatId}`,
+                type: 'GET',
+                success: function(res) {
+                    $('#subcat_id').empty();
+                    res.forEach(function(subcat) {
+                        $('#subcat_id').append(`<option value="${subcat.id}">${subcat.name}</option>`);
+                    });
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        // Call the function to load subcategories when the page loads if there's a supercategory selected
+        $(document).ready(function() {
+            if ($('#supercat_id').val()) {
+                loadSubcategories();
+            }
+        });
+    </script>
+</body>
+</html>

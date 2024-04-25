@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Shop</title>
+</head>
+<body>
+    <h1>Edit Shop</h1>
+    <form method="post">
+        Description: <input type="text" name="desc" value="{{ shop.desc }}" required><br>
+        Telephone: <input type="text" name="tel" value="{{ shop.tel }}" required><br>
+        Email: <input type="email" name="email" value="{{ shop.email }}" required><br>
+        Address: <input type="text" name="address" value="{{ shop.address }}" required><br>
+        <input type="submit" value="Update Shop">
+    </form>
+    <a href="{{ url_for('shops') }}">Back to Shops List</a>
+</body>
+</html>

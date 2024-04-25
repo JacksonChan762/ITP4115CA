@@ -1,0 +1,16 @@
+{% extends "base.html.j2" %}
+{% block content %}
+<h1>Store Inventory for Product ID: {{ product_id }}</h1>
+<table>
+  <tr>
+    <th>Inventory ID</th>
+    <th>Quantity</th>
+  </tr>
+  {% for inventory in inventories %}
+  <tr>
+    <td>{{ inventory.id }}</td>
+    <td>{{ inventory.quantity }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

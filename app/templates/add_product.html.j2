@@ -1,11 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-    <title>新增產品</title>
+    <meta charset="UTF-8">
+    <title>添加產品</title>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const superCatSelect = document.getElementById('supercat_select');
+        superCatSelect.addEventListener('change', function() {
+            const supercatId = this.value;
+            fetch(`/get-subcategories/${supercatId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const subcatSelect = document.getElementById('subcat_select');
+                    subcatSelect.innerHTML = '';  // 清除現有選項
+                    data.forEach(subcat => {
+                        const option = new Option(subcat.name, subcat.id);
+                        subcatSelect.options.add(option);
+                    });
+                })
+                .catch(error => console.error('獲取子類別失敗:', error));
+        });
+    });
+    </script>
 </head>
 <body>
-    <h1>新增產品</h1>
-    <form method="post" enctype="multipart/form-data">
+    <h1>添加產品</h1>
+    <form method="POST" enctype="multipart/form-data">
         <label for="name">產品名稱:</label>
         <input type="text" id="name" name="name" required><br>
 
@@ -16,8 +36,20 @@
         <textarea id="description" name="description" required></textarea><br>
         <label for="image">產品圖片:</label>
         <input type="file" id="image" name="image" accept="image/*"><br>
-
-        <input type="submit" value="提交">
+        <label for="supercat_select">類別:</label>
+        <select id="supercat_select" name="supercat_id">
+            <option>選擇一個類別</option>
+            {% for category in categories %}
+            <option value="{{ category.super_cat_id }}">{{ category.cat_name }}</option>
+            {% endfor %}
+            </select><br>
+        <a href="{{ url_for('supercat_list') }}" class="btn btn-danger">list 類別 </a>
+        <label for="subcat_select">子類別:</label>
+        <select id="subcat_select" name="subcat_id">
+            <option>選擇一個子類別</option>
+        </select><br>
+        <a href="{{ url_for('subcat_list') }}" class="btn btn-danger">list 子類別 </a>
+        <button type="submit">添加產品</button>
     </form>
 </body>
 </html>
