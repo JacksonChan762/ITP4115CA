@@ -100,12 +100,46 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text)
     image_filename = db.Column(db.String(120), nullable=True) 
+    ##
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)  
     cart = db.relationship("Cart", backref='product')   
     collect = db.relationship("Collect", backref='poods') # 订单外键关系关联
     orders_detail = db.relationship("OrdersDetail", backref='product')  # 订单外键关系关联
+    supercat_id = db.Column(db.Integer, db.ForeignKey('supercat.id'), nullable=False)
+    subcat_id = db.Column(db.Integer, db.ForeignKey('subcat.id'), nullable=False)
+   # 店铺外键关系关联
+    
     def __repr__(self):
         return f'<Product {self.name}>'
+
+
+
+
+class SuperCat(db.Model):
+    __tablename__ = 'supercat'
+    id = db.Column(db.Integer, primary_key=True)
+    cat_name = db.Column(db.String(100), nullable=False)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    subcats = db.relationship("SubCat", backref='supercat', lazy='dynamic')
+    products = db.relationship("Product", backref='supercat', lazy='dynamic')
+
+    def __repr__(self):
+        return f"<SuperCat {self.cat_name}>"
+
+# Sub Category Model
+class SubCat(db.Model):
+    __tablename__ = 'subcat'
+    id = db.Column(db.Integer, primary_key=True)
+    cat_name = db.Column(db.String(100), nullable=False)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    super_cat_id = db.Column(db.Integer, db.ForeignKey('supercat.id'), nullable=False)
+    products = db.relationship("Product", backref='subcat', lazy='dynamic')
+
+    def __repr__(self):
+        return f"<SubCat {self.cat_name}>"
+    
+
+
 
 class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -148,3 +182,39 @@ class OrdersDetail(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))  # 所属商品
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))  # 所属订单
     number = db.Column(db.Integer, default=0)  # 购买数量
+    price = db.Column(db.Float, default=0)  # 价格
+    order_name = db.Column(db.String(100), nullable=True)  # 商品名称
+
+
+
+
+class Shop(db.Model):
+    __tablename__ = 'shop'
+    id = db.Column(db.Integer, primary_key=True)  # 编号
+    desc = db.Column(db.String(255), nullable=True)  # 商店描述
+    tel = db.Column(db.String(11), nullable=True)  # 联系电话
+    email = db.Column(db.String(100), nullable=True)  # 联系邮箱
+    address = db.Column(db.String(255), nullable=True)  # 商店地址
+
+    def __repr__(self):
+        return f"<Shop {self.id}>"
+
+class Inventory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    quantity = db.Column(db.Integer)
+    shop_id = db.Column(db.Integer, db.ForeignKey('shop.id'))
+    
+
+class Reviews(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    review = db.Column(db.String(140))
+    rating = db.Column(db.Integer)
+
+class discount(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    discount = db.Column(db.Float)
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
