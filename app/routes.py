@@ -6,9 +6,7 @@ from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop ,Inventory, Reviews ,discount
-from werkzeug.utils import secure_filename
-from PIL import Image
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Promotion , ProductPromotion
 import jinja2
 import os
 
@@ -518,4 +516,22 @@ def shop_edit(id):
         db.session.commit()
         return redirect(url_for('shops'))
     return render_template('shop_edit.html.j2', shop=shop)
+
+@app.route('/promotions-list/')
+def promotions_list():
+    Promotions = promotion.query.all()  # Fetch all promotions from the database
+    return render_template('promotions_list.html', promotions=Promotions)
+
+
+@app.route('/promotions-add/', methods=['GET', 'POST'])
+def promotions_add():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        discount = request.form.get('discount')
+        promotion = promotion(name=name, discount=discount)
+        db.session.add(promotion)
+        db.session.commit()
+        return redirect(url_for('promotions_list'))
+    return render_template('promotions_add.html')
+
 
