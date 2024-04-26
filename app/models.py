@@ -24,6 +24,7 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     orders = db.relationship('Orders', backref='user') 
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
@@ -107,7 +108,7 @@ class Product(db.Model):
     orders_detail = db.relationship("OrdersDetail", backref='product')  # 订单外键关系关联
     supercat_id = db.Column(db.Integer, db.ForeignKey('supercat.id'), nullable=False)
     subcat_id = db.Column(db.Integer, db.ForeignKey('subcat.id'), nullable=False)
-    promotions = db.relationship('ProductPromotion', back_populates='product')  # 添加这行
+    
    # 店铺外键关系关联
     
     def __repr__(self):
@@ -200,23 +201,23 @@ class Shop(db.Model):
     def __repr__(self):
         return f"<Shop {self.id}>"
 
-class Promotion(db.Model):
-    __tablename__ = 'promotions'
-    id = db.Column(db.Integer, primary_key=True)  # 编号
-    desc = db.Column(db.String(255), nullable=True)  # 促销描述
-    start_date = db.Column(db.DateTime, index=True, default=datetime.now)  # 开始时间
-    end_date = db.Column(db.DateTime, index=True, default=datetime.now)  # 结束时间
-    prices = db.Column(db.Float, default=0)  # 价格
-    products = db.relationship('ProductPromotion', back_populates='promotion')  # 添加这行
 
-                               
 
-class ProductPromotion(db.Model):
-    __tablename__ = 'product_promotions'
-    id = db.Column(db.Integer, primary_key=True)  # 编号
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))  # 所属商品 ID
-    promotion_id = db.Column(db.Integer, db.ForeignKey('promotions.id'))  # 所属促销 ID
+class Author(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    desc = db.Column(db.String(255), nullable=True)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    # Assuming you want a relationship where Users can be linked to an Author.
+    users = db.relationship('User', backref='author', lazy='dynamic')
+    news = db.relationship('New', backref='author', lazy='dynamic')
 
-    # Relationships to access linked product and promotion
-    product = db.relationship('Product', back_populates='promotions')
-    promotion = db.relationship('Promotion', back_populates='products')
+class New(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    image_filename = db.Column(db.String(120), nullable=True)
+    description = db.Column(db.String(255), nullable=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
+    # The relationship is defined only once and correctly linked to Author

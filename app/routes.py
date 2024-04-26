@@ -6,7 +6,7 @@ from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , 
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , New
 import jinja2
 import os
 
@@ -516,4 +516,31 @@ def shop_edit(id):
         db.session.commit()
         return redirect(url_for('shops'))
     return render_template('shop_edit.html.j2', shop=shop)
+
+@app.route('/shop/detail/<int:id>/')
+def shop_detail(id):
+    shop = Shop.query.get_or_404(id)
+    return render_template('shop_detail.html.j2', shop=shop)
+
+
+@app.route('/author_list')
+def author_list():
+    authors = Author.query.all()
+    return render_template('author_list.html.j2', authors=authors)
+
+
+@app.route('/author_detail/<int:id>/')
+def author_detail(id):
+    author = Author.query.get_or_404(id)
+    return render_template('author_detail.html.j2', author=author)
+
+@app.route('/news_list')
+def news_list():
+    news = New.query.all()
+    return render_template('news_list.html.j2', news=news)
+
+@app.route('/news_detail/<int:id>/')
+def news_detail(id):
+    new = New.query.get_or_404(id)
+    return render_template('news_detail.html.j2', new=new)
 
