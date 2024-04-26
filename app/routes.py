@@ -6,11 +6,12 @@ from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , New
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , News
 from werkzeug.utils import secure_filename
 from PIL import Image
 import jinja2
 import os
+import logging
 
 
 @app.before_request
@@ -403,39 +404,6 @@ def shops():
     # 將查詢結果傳遞給模板
     return render_template('shop.html.j2', shop=shops)
 
-@app.route('/shop/add/', methods=['GET', 'POST'])
-def shop_add():
-    if request.method == 'POST':
-        desc = request.form.get('desc')
-        tel = request.form.get('tel')
-        email = request.form.get('email')
-        address = request.form.get('address')
-        shop = Shop(desc=desc, tel=tel, email=email, address=address)
-        db.session.add(shop)
-        db.session.commit()
-        return redirect(url_for('shops'))
-    return render_template('shop_add.html.j2')
-
-@app.route('/shop/del/', methods=['POST'])
-def shop_del():
-    id = request.form.get('id')
-    shop = Shop.query.get(id)
-    if shop:
-        db.session.delete(shop)
-        db.session.commit()
-    return redirect(url_for('shops'))
-
-@app.route('/shop/edit/<int:id>/', methods=['GET', 'POST'])
-def shop_edit(id):
-    shop = Shop.query.get_or_404(id)
-    if request.method == 'POST':
-        shop.desc = request.form.get('desc')
-        shop.tel = request.form.get('tel')
-        shop.email = request.form.get('email')
-        shop.address = request.form.get('address')
-        db.session.commit()
-        return redirect(url_for('shops'))
-    return render_template('shop_edit.html.j2', shop=shop)
 
 @app.route('/shop/detail/<int:id>/')
 def shop_detail(id):
@@ -443,32 +411,31 @@ def shop_detail(id):
     return render_template('shop_detail.html.j2', shop=shop)
 
 
-@app.route('/author_list')
-def author_list():
+@app.route('/author')
+def author():
     authors = Author.query.all()
-    return render_template('author_list.html.j2', authors=authors)
+    return render_template('author.html.j2', authors=authors)
 
 
-@app.route('/news_detail/<int:id>')
-def news_detail(id):
-    news_item = New.query.get_or_404(id)
-    return render_template('news_detail.html.j2', news_item=news_item)
+@app.route('/author/<int:id>')
+def author_detail(id):
+    author = Author.query.get_or_404(id)
+    return render_template('author_detail.html.j2', author=author)
 
 @app.route('/news_list')
 def news_list():
-    news = New.query.all()
+    news = News.query.all()
     return render_template('news_list.html.j2', news=news)
 
-@app.route('/news_list')
-def news_list_all():
-    news = New.query.all()
-    return render_template('news_list.html.j2', news=news)
 
-@app.route('/news_list/<int:id>')
-def news_list_by_author(id):
-    news = New.query.filter_by(author_id=id).all()
-    return render_template('news_list.html.j2', news=news)
 
+
+@app.route('/news_list/<int:news_id>')
+def news_detail(news_id):
+    news_item = News.query.get(news_id)
+    if news_item is None:
+        abort(404)
+    return render_template('news_detail.html.j2', news_item=news_item)
 
 @app.route('/search')
 def search():
