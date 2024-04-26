@@ -6,7 +6,9 @@ from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , 
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , New
+from werkzeug.utils import secure_filename
+from PIL import Image
 import jinja2
 import os
 
@@ -209,48 +211,6 @@ def product_detail(product_id):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
-@app.route('/add-product', methods=['GET', 'POST'])
-def add_product():
-    if request.method == 'POST':
-        # 提取表單數據
-        name = request.form['name']
-        price = request.form['price']
-        description = request.form['description']
-        image_file = request.files['image']
-        supercat_id = int(request.form['supercat_id'])
-        subcat_id = int(request.form['subcat_id'])
-
-        if image_file.filename == '':
-            flash('未選擇文件')
-            return redirect(request.url)
-
-        if image_file and allowed_file(image_file.filename):
-            filename = secure_filename(image_file.filename)
-            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            image_file.save(image_path)
-
-            # 調整圖片大小並保存縮略圖
-            img = Image.open(image_path)
-            img.thumbnail((128, 128))
-            thumbnail_path = os.path.join(app.config['THUMBNAIL_FOLDER'], filename)
-            img.save(thumbnail_path)
-
-            # 創建新的產品實例
-            new_product = Product(
-                name=name,
-                price=float(price),
-                description=description,
-                image_filename=filename,
-                supercat_id=supercat_id,
-                subcat_id=subcat_id
-            )
-            db.session.add(new_product)
-            db.session.commit()
-
-            flash('產品成功添加！')
-            return redirect(url_for('index'))
-
-    return render_template('add_product.html.j2', categories=SubCat.query.distinct(SubCat.super_cat_id).all())
 
 @app.route('/get-subcategories/<int:supercat_id>')
 def get_subcategories(supercat_id):
@@ -258,24 +218,6 @@ def get_subcategories(supercat_id):
     subcat_list = [{'id': subcat.id, 'name': subcat.cat_name} for subcat in subcats]
     return jsonify(subcat_list)
 
-@app.route('/supercat/add/', methods=['GET', 'POST'])
-def supercat_add():
-    if request.method == 'POST':
-        cat_name = request.form.get('cat_name')
-        supercat = SuperCat(cat_name=cat_name)
-        db.session.add(supercat)
-        db.session.commit()
-        return redirect(url_for('supercat_list'))
-    return render_template('supercat_add.html.j2')
-
-@app.route('/supercat/del/', methods=['POST'])
-def supercat_del():
-    id = request.form.get('id')
-    supercat = SuperCat.query.get(id)
-    if supercat:
-        db.session.delete(supercat)
-        db.session.commit()
-    return redirect(url_for('supercat_list'))
 
 @app.route("/supercat/list/", methods=["GET"])
 def supercat_list():
@@ -286,29 +228,7 @@ def supercat_list():
 def subcat_list():
     subcats = SubCat.query.all()
     return render_template('subcat_list.html.j2', subcats=subcats)
-
-@app.route('/subcat/add/', methods=["GET", "POST"])
-def subcat_add():
-    supercats = SuperCat.query.all()
-    subcats = SubCat.query.all()
-    if request.method == "POST":
-        cat_name = request.form.get("cat_name")
-        super_cat_id = request.form.get("super_cat_id")
-        subcat = SubCat(cat_name=cat_name, super_cat_id=super_cat_id)
-        db.session.add(subcat)
-        db.session.commit()
-        return redirect(url_for('subcat_list'))
-    return render_template('subcat_add.html.j2', supercats=supercats , subcats=subcats)
-
-@app.route("/subcat/del/", methods=["POST"])
-def subcat_del():
-    id = request.form.get("id")
-    subcat = SubCat.query.get(id)
-    if subcat:
-        db.session.delete(subcat)
-        db.session.commit()
-    return redirect(url_for('subcat_list'))
-    
+  
 
 # 添加购物车
 @app.route("/cart_add/")
@@ -517,3 +437,49 @@ def shop_edit(id):
         return redirect(url_for('shops'))
     return render_template('shop_edit.html.j2', shop=shop)
 
+@app.route('/shop/detail/<int:id>/')
+def shop_detail(id):
+    shop = Shop.query.get_or_404(id)
+    return render_template('shop_detail.html.j2', shop=shop)
+
+
+@app.route('/author_list')
+def author_list():
+    authors = Author.query.all()
+    return render_template('author_list.html.j2', authors=authors)
+
+
+@app.route('/news_detail/<int:id>')
+def news_detail(id):
+    news_item = New.query.get_or_404(id)
+    return render_template('news_detail.html.j2', news_item=news_item)
+
+@app.route('/news_list')
+def news_list():
+    news = New.query.all()
+    return render_template('news_list.html.j2', news=news)
+
+@app.route('/news_list')
+def news_list_all():
+    news = New.query.all()
+    return render_template('news_list.html.j2', news=news)
+
+@app.route('/news_list/<int:id>')
+def news_list_by_author(id):
+    news = New.query.filter_by(author_id=id).all()
+    return render_template('news_list.html.j2', news=news)
+
+
+@app.route('/search')
+def search():
+    page = request.args.get('page', 1, type=int)
+    keywords = request.args.get('keywords', '', type=str)
+    if keywords:
+        page_data = Product.query.filter(Product.name.like("%" + keywords + "%")).order_by(
+            Product.addtime.desc()
+        ).paginate(page=page, per_page=12)
+    else:
+        page_data = Product.query.order_by(
+            Product.addtime.desc()
+        ).paginate(page=page, per_page=12)
+    return render_template("search.html.j2", page_data=page_data, keywords=keywords)

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Author List</title>
+</head>
+<body>
+    <h1>Author List</h1>
+    <ul>
+        {% for author in authors %}
+        <li><a href="{{ url_for('author_detail', id=author.id) }}">{{ author.name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
