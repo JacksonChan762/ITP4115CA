@@ -211,48 +211,6 @@ def product_detail(product_id):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
-@app.route('/add-product', methods=['GET', 'POST'])
-def add_product():
-    if request.method == 'POST':
-        # 提取表單數據
-        name = request.form['name']
-        price = request.form['price']
-        description = request.form['description']
-        image_file = request.files['image']
-        supercat_id = int(request.form['supercat_id'])
-        subcat_id = int(request.form['subcat_id'])
-
-        if image_file.filename == '':
-            flash('未選擇文件')
-            return redirect(request.url)
-
-        if image_file and allowed_file(image_file.filename):
-            filename = secure_filename(image_file.filename)
-            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            image_file.save(image_path)
-
-            # 調整圖片大小並保存縮略圖
-            img = Image.open(image_path)
-            img.thumbnail((128, 128))  # Resize the image
-            thumbnail_path = os.path.join(app.config['THUMBNAIL_FOLDER'], filename)
-            img.save(thumbnail_path)
-
-            # 創建新的產品實例
-            new_product = Product(
-                name=name,
-                price=float(price),
-                description=description,
-                image_filename=filename,
-                supercat_id=supercat_id,
-                subcat_id=subcat_id
-            )
-            db.session.add(new_product)
-            db.session.commit()
-
-            flash('產品成功添加！')
-            return redirect(url_for('index'))
-
-    return render_template('add_product.html.j2', categories=SubCat.query.distinct(SubCat.super_cat_id).all())
 
 @app.route('/get-subcategories/<int:supercat_id>')
 def get_subcategories(supercat_id):
@@ -260,24 +218,6 @@ def get_subcategories(supercat_id):
     subcat_list = [{'id': subcat.id, 'name': subcat.cat_name} for subcat in subcats]
     return jsonify(subcat_list)
 
-@app.route('/supercat/add/', methods=['GET', 'POST'])
-def supercat_add():
-    if request.method == 'POST':
-        cat_name = request.form.get('cat_name')
-        supercat = SuperCat(cat_name=cat_name)
-        db.session.add(supercat)
-        db.session.commit()
-        return redirect(url_for('supercat_list'))
-    return render_template('supercat_add.html.j2')
-
-@app.route('/supercat/del/', methods=['POST'])
-def supercat_del():
-    id = request.form.get('id')
-    supercat = SuperCat.query.get(id)
-    if supercat:
-        db.session.delete(supercat)
-        db.session.commit()
-    return redirect(url_for('supercat_list'))
 
 @app.route("/supercat/list/", methods=["GET"])
 def supercat_list():
@@ -288,29 +228,7 @@ def supercat_list():
 def subcat_list():
     subcats = SubCat.query.all()
     return render_template('subcat_list.html.j2', subcats=subcats)
-
-@app.route('/subcat/add/', methods=["GET", "POST"])
-def subcat_add():
-    supercats = SuperCat.query.all()
-    subcats = SubCat.query.all()
-    if request.method == "POST":
-        cat_name = request.form.get("cat_name")
-        super_cat_id = request.form.get("super_cat_id")
-        subcat = SubCat(cat_name=cat_name, super_cat_id=super_cat_id)
-        db.session.add(subcat)
-        db.session.commit()
-        return redirect(url_for('subcat_list'))
-    return render_template('subcat_add.html.j2', supercats=supercats , subcats=subcats)
-
-@app.route("/subcat/del/", methods=["POST"])
-def subcat_del():
-    id = request.form.get("id")
-    subcat = SubCat.query.get(id)
-    if subcat:
-        db.session.delete(subcat)
-        db.session.commit()
-    return redirect(url_for('subcat_list'))
-    
+  
 
 # 添加购物车
 @app.route("/cart_add/")
@@ -531,10 +449,10 @@ def author_list():
     return render_template('author_list.html.j2', authors=authors)
 
 
-@app.route('/author_detail/<int:id>/')
-def author_detail(id):
-    author = Author.query.get_or_404(id)
-    return render_template('author_detail.html.j2', author=author)
+@app.route('/news_detail/<int:id>')
+def news_detail(id):
+    news_item = New.query.get_or_404(id)
+    return render_template('news_detail.html.j2', news_item=news_item)
 
 @app.route('/news_list')
 def news_list():

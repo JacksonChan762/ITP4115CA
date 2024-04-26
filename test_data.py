@@ -1,96 +1,55 @@
-from app import db, app
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , StoreInventory
-
+from app import app, db
+from app.models import User, Post, Product, SuperCat, SubCat, Cart, Collect, Orders, OrdersDetail, Author, New, Shop
 
 app_context = app.app_context()
 app_context.push()
 
-# Create some users
-user1 = User(username='john', email='john@example.com')
-user1.set_password('password')
-user2 = User(username='jane', email='jane@example.com')
-user2.set_password('password')
-db.session.add(user1)
-db.session.add(user2)
-db.session.commit()
+def add_test_data():
+    # Clear existing data and create new tables
+    db.drop_all()
+    db.create_all()
 
-# Create some posts
-post1 = Post(body='This is a test post.', user_id=user1.id)
-post2 = Post(body='Another test post.', user_id=user2.id)
-db.session.add(post1)
-db.session.add(post2)
-db.session.commit()
+    # Create users
+    user1 = User(username='user1', email='user1@example.com')
+    user1.set_password('password1')
+    user2 = User(username='user2', email='user2@example.com')
+    user2.set_password('password2')
 
-# Create some categories
-supercat1 = SuperCat(cat_name='Electronics')
-supercat2 = SuperCat(cat_name='Clothing')
-db.session.add(supercat1)
-db.session.add(supercat2)
+    # Create posts
+    post1 = Post(body='Hello from user1!', user_id=1)
+    post2 = Post(body='Hello from user2!', user_id=2)
 
-subcat1 = SubCat(cat_name='Laptops', super_cat_id=supercat1.id)
-db.session.add(subcat1)
-subcat2 = SubCat(cat_name='Smartphones', super_cat_id=supercat1.id)
-subcat3 = SubCat(cat_name='Shirts', super_cat_id=supercat2.id)
-subcat4 = SubCat(cat_name='Pants', super_cat_id=supercat2.id)
-db.session.add(subcat1)
-db.session.add(subcat2)
-db.session.add(subcat3)
-db.session.add(subcat4)
-db.session.commit()
+    # Create authors
+    author1 = Author(name='Author One', desc='Description of Author One')
+    author2 = Author(name='Author Two', desc='Description of Author Two')
 
-# Create some products
-product1 = Product(name='MacBook Pro', price=1999.99, description='A powerful laptop for professionals.', supercat_id=supercat1.id, subcat_id=subcat1.id)
-product2 = Product(name='iPhone 12', price=799.99, description='The latest iPhone from Apple.', supercat_id=supercat1.id, subcat_id=subcat2.id)
-product3 = Product(name='Polo Shirt', price=29.99, description='A classic polo shirt.', supercat_id=supercat2.id, subcat_id=subcat3.id)
-product4 = Product(name='Jeans', price=49.99, description='A pair of stylish jeans.', supercat_id=supercat2.id, subcat_id=subcat4.id)
-db.session.add(product1)
-db.session.add(product2)
-db.session.add(product3)
-db.session.add(product4)
-db.session.commit()
+    # Create news
+    news1 = New(title='News One', content='Content of News One', author_id=1)
+    news2 = New(title='News Two', content='Content of News Two', author_id=2)
 
-# Create some carts
-cart1 = Cart(user_id=user1.id, product_id=product1.id, quantity=1)
-cart2 = Cart(user_id=user2.id, product_id=product3.id, quantity=2)
-db.session.add(cart1)
-db.session.add(cart2)
-db.session.commit()
+    # Create product categories
+    supercat1 = SuperCat(cat_name='Electronics')
+    subcat1 = SubCat(cat_name='Smartphones', super_cat_id=1)
 
-# Create some collections
-collect1 = Collect(product_id=product2.id, user_id=user1.id)
-collect2 = Collect(product_id=product4.id, user_id=user2.id)
-db.session.add(collect1)
-db.session.add(collect2)
-db.session.commit()
+    # Create products
+    product1 = Product(name='iPhone 12', price=999.99, description='Latest Apple iPhone', supercat_id=1, subcat_id=1 , image_filename='iphone12.jpg')
+    product2 = Product(name='Samsung Galaxy S20', price=899.99, description='Latest Samsung Phone', supercat_id=1, subcat_id=1, image_filename='s20.jpg')
 
-# Create some orders
-order1 = Orders(user_id=user1.id)
-order2 = Orders(user_id=user2.id)
-db.session.add(order1)
-db.session.add(order2)
-db.session.commit()
+    # Create a cart
+    cart1 = Cart(user_id=1, product_id=1, quantity=2)
 
-# Create some order details
-order_detail1 = OrdersDetail(product_id=product1.id, order_id=order1.id, number=1, price=product1.price, order_name=product1.name)
-order_detail2 = OrdersDetail(product_id=product3.id, order_id=order2.id, number=2, price=product3.price, order_name=product3.name)
-db.session.add(order_detail1)
-db.session.add(order_detail2)
-db.session.commit()
+    # Create orders
+    order1 = Orders(user_id=1)
+    order_detail1 = OrdersDetail(product_id=1, order_id=1, number=1, price=999.99)
 
-# Create some shops
-shop1 = Shop(desc='A tech store', tel='1234567890', email='shop1@example.com', address='123 Main St')
-shop2 = Shop(desc='A clothing store', tel='0987654321', email='shop2@example.com', address='456 Oak Ave')
-db.session.add(shop1)
-db.session.add(shop2)
-db.session.commit()
+    # Create shop
+    shop1 = Shop(desc='Local Computer Store', tel='1234567890', email='info@localstore.com', address='123 Tech Ave')
 
-# Create some store inventories
-store_inventory1 = StoreInventory(product_id=product1.id, number=10, shop_id=shop1.id)
-store_inventory2 = StoreInventory(product_id=product2.id, number=20, shop_id=shop1.id)
-store_inventory3 = StoreInventory(product_id=product3.id, number=15, shop_id=shop2.id)
-store_inventory4 = StoreInventory(product_id=product4.id, number=25, shop_id=shop2.id)
-db.session.add(store_inventory1)
-db.session.add(store_inventory2)
-db.session.add(store_inventory3)
-db.session.add(store_inventory4)
-db.session.commit()
+    # Add to session and commit
+    db.session.add_all([user1, user2, post1, post2, author1, author2, news1, news2, supercat1, subcat1, product1, product2, cart1, order1, order_detail1, shop1])
+    db.session.commit()
+
+    print('Test data added.')
+
+if __name__ == '__main__':
+    add_test_data()

@@ -158,8 +158,8 @@ class Cart(db.Model):
 class Collect(db.Model):
     __tablename__ = 'collect'
     id = db.Column(db.Integer, primary_key=True)  # 编号
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))  # 所屬商品
-    product = db.relationship('Product')  # 添加這行
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    product = db.relationship('Product', back_populates='collect', overlaps="collect,poods")
     user_id = db.Column(db.Integer)  # 所属用户
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)  # 添加时间
 

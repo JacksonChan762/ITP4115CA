@@ -11,7 +11,7 @@
     <h2>News by this Author</h2>
     <ul>
         {% for news_item in author.news %}
-        <li><a href="{{ url_for('news_detail', id=news_item.id) }}">{{ news_item.title }}</a></li>
+        <li><a href="{{ url_for('author_detail', id=author.id) }}">{{ author.name }}</a></li>
         {% endfor %}
     </ul>
     <a href="{{ url_for('author_list') }}">Back to Author List</a>
