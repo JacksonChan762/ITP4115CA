@@ -13,15 +13,15 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>Date</th>
+                        <td class="text-center image">Order ID</td>
+                        <td class="text-center total">Date</td>
                         <th>Details</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for order in orders %}
                         <tr>
-                            <td>{{ order.order_id }}</td>
+                            <td class="text-center image" width="10%">{{ order.order_id }}</td>
                             <td>
                                 <a href="{{ url_for('order_detail', id=order.order_id) }}" class="btn btn-info">View Details</a>
                             </td>
