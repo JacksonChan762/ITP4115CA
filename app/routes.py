@@ -539,8 +539,27 @@ def news_list():
     news = New.query.all()
     return render_template('news_list.html.j2', news=news)
 
-@app.route('/news_detail/<int:id>/')
-def news_detail(id):
-    new = New.query.get_or_404(id)
-    return render_template('news_detail.html.j2', new=new)
+@app.route('/news_list')
+def news_list_all():
+    news = New.query.all()
+    return render_template('news_list.html.j2', news=news)
 
+@app.route('/news_list/<int:id>')
+def news_list_by_author(id):
+    news = New.query.filter_by(author_id=id).all()
+    return render_template('news_list.html.j2', news=news)
+
+
+@app.route('/search')
+def search():
+    page = request.args.get('page', 1, type=int)
+    keywords = request.args.get('keywords', '', type=str)
+    if keywords:
+        page_data = Product.query.filter(Product.name.like("%" + keywords + "%")).order_by(
+            Product.addtime.desc()
+        ).paginate(page=page, per_page=12)
+    else:
+        page_data = Product.query.order_by(
+            Product.addtime.desc()
+        ).paginate(page=page, per_page=12)
+    return render_template("search.html.j2", page_data=page_data, keywords=keywords)
