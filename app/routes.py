@@ -6,7 +6,7 @@ from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , 
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop
 import jinja2
 import os
 

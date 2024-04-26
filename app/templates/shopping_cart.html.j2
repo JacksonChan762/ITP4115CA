@@ -8,21 +8,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Subtotal</th>
-                    <th>Action</th>
+                    <td class="text-left name">Product Name</td>
+                    <td class="text-left quantity">>Quantity</td>
+                    <td class="text-right price">Unit Price</td>
+                    <td class="text-right">Subtotal</td>
+                    <td class="text-right">Action</td>
                 </tr>
             </thead>
             <tbody>
                 {% for item in cart %}
                 <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.number }}</td>
-                    <td>{{ item.product.price | format_currency }}</td>
-                    <td>{{ item.number * item.product.price | format_currency }}</td>
-                    <td>
+                    <td class="text-left name">{{ item.product.name }}</td>
+                    <td class="text-left quantity">{{ item.number }}</td>
+                    <td class="text-right price">{{ item.product.price | format_currency }}</td>
+                    <td class="text-right total" value="{{item.goods.current_price * item.number}}">{{ item.number * item.product.price | format_currency }}</td>
+                    <td class="text-center quantity">
                         <!-- Delete an individual product via GET request -->
                         <a href="{{ url_for('cart_delete', id=item.product.id) }}" class="btn btn-danger btn-sm">Delete</a>
                     </td>
