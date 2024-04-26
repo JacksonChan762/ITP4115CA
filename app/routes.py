@@ -7,6 +7,8 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
 from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , New
+from werkzeug.utils import secure_filename
+from PIL import Image
 import jinja2
 import os
 
@@ -231,7 +233,7 @@ def add_product():
 
             # 調整圖片大小並保存縮略圖
             img = Image.open(image_path)
-            img.thumbnail((128, 128))
+            img.thumbnail((128, 128))  # Resize the image
             thumbnail_path = os.path.join(app.config['THUMBNAIL_FOLDER'], filename)
             img.save(thumbnail_path)
 
