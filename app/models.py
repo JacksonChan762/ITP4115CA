@@ -24,7 +24,6 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     orders = db.relationship('Orders', backref='user') 
-    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
@@ -202,22 +201,18 @@ class Shop(db.Model):
         return f"<Shop {self.id}>"
 
 
-
 class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    desc = db.Column(db.String(255), nullable=True)
+    name = db.Column(db.String(50))
+    desc = db.Column(db.String(200))
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
-    # Assuming you want a relationship where Users can be linked to an Author.
-    users = db.relationship('User', backref='author', lazy='dynamic')
-    news = db.relationship('New', backref='author', lazy='dynamic')
+    news = db.relationship('News')
 
-class New(db.Model):
+class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text)
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     image_filename = db.Column(db.String(120), nullable=True)
-    description = db.Column(db.String(255), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
-    # The relationship is defined only once and correctly linked to Author
+    author = db.relationship('Author', backref='news_items')

@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>News Detail</title>
+    <title>{{ news_item.title }}</title>
 </head>
 <body>
-    <h1>{{ new.title }}</h1>
-    <img src="{{ url_for('static', filename=new.image_filename) }}" alt="News Image">
-    <p>{{ new.content }}</p>
-    <p>Published on: {{ new.addtime }}</p>
+    <h1>{{ news_item.title }}</h1>
+    <img src="{{ url_for('static', filename='images/' + news_item.image_filename) }}" alt="News Image">
+    <p>{{ news_item.content }}</p>
+    <p>Published on: {{ news_item.addtime.strftime('%Y-%m-%d %H:%M') }}</p>
+    <p>Author: {{ news_item.author.name }}</p>
     <a href="{{ url_for('news_list') }}">Back to News List</a>
 </body>
 </html>

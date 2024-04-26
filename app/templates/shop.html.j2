@@ -5,17 +5,15 @@
 </head>
 <body>
     <h1>Shops List</h1>
-    <a href="{{ url_for('shop_add') }}">Add New Shop</a>
+
     {% if shop %}
     <ul>
         {% for s in shop %}
         <li>
             {{ s.desc }} - {{ s.tel }} - {{ s.email }} - {{ s.address }}
-            <form method="post" action="{{ url_for('shop_del') }}">
                 <input type="hidden" name="id" value="{{ s.id }}">
                 <input type="submit" value="Delete">
             </form>
-            <a href="{{ url_for('shop_edit', id=s.id) }}">Edit</a>
         </li>
         {% endfor %}
     </ul>
