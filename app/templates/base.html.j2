@@ -80,25 +80,27 @@
                            role="button"
                            aria-haspopup="true"
                            aria-expanded="false">
-                            手機產品 <span class="caret"></span>
+                            產品 <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
+                        <li>
+                            <a href="{{ url_for('products', supercat_id=1) }}">手機產品</a>
+                            <input type="hidden" name="supercat_id" value="1">
+                        </li>
+
+                        <li>
+                            <a href="{{ url_for('products', supercat_id=2) }}">攝影產品</a>
+                        </li>
                             <li>
-                                <a href="#">智能手機</a>
+                                <a href="{{ url_for('products', supercat_id=3) }}">電腦產品</a>
                             </li>
                             <li>
-                                <a href="#">攝影產品</a>
-                            </li>
-                            <li>
-                                <a href="#">電腦產品</a>
-                            </li>
-                            <li>
-                                <a href="#">電腦周邊</a>
+                                <a href="{{ url_for('products', supercat_id=4) }}">電腦周邊</a>
                             </li>
                             </ul>
                     </li>
                     <li>
-                        <a href="{{ url_for('explore') }}">新品速遞</a>
+                        <a href="{{ url_for('newproduct') }}">新品速遞</a>
                     </li>
                     <li>
                         <a href="{{ url_for('explore') }}">推廣優惠</a>
