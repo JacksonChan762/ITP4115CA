@@ -65,8 +65,8 @@ class EditProfileForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
-    content = TextAreaField('Content', validators=[DataRequired()])
+    title = StringField(_l('Title'), validators=[DataRequired()])
+    content = TextAreaField(_l('Content'), validators=[DataRequired()])
     submit = SubmitField('Post')
 
 from flask_wtf import FlaskForm

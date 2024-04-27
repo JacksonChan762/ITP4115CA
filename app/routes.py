@@ -519,12 +519,23 @@ def single_post(post_id):
     return render_template('post.html.j2', post=post)
 
 
+
 @app.route('/new_post', methods=['GET', 'POST'])
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, date_posted=datetime.utcnow())
+        post = Post(body=form.post.data)  # Remove the 'author' argument
         db.session.add(post)
         db.session.commit()
-        return redirect(url_for('home'))
-    return render_template('create_post.htm.j2', form=form)
+        flash(_('Your post is now live!'))
+        return redirect(url_for('index'))
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.paginate(
+        page=page, per_page=app.config["POSTS_PER_PAGE"], error_out=False)
+    next_url = url_for(
+        'new_post', page=posts.next_num) if posts.next_num else None
+    prev_url = url_for(
+        'new_post', page=posts.prev_num) if posts.prev_num else None
+    return render_template('index.html.j2', title=_('Home'), form=form,
+                           posts=posts.items, next_url=next_url,
+                           prev_url=prev_url)
