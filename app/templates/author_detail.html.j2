@@ -1,19 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Author Detail</title>
-</head>
-<body>
-    <h1>Author: {{ author.name }}</h1>
-    <p>Description: {{ author.desc }}</p>
-    <p>Added on: {{ author.addtime }}</p>
-    <h2>News by this Author</h2>
-    <ul>
-        {% for news_item in author.news %}
-        <li><a href="{{ url_for('author_detail', id=author.id) }}">{{ author.name }}</a></li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('author') }}">Back to Author List</a>
-</body>
-</html>
+{% extends "base.html.j2" %}
+
+{% block title %}
+Author Detail - {{ author.name }}
+{% endblock %}
+
+{% block content %}
+<h1>Author: {{ author.name }}</h1>
+<p>Description: {{ author.desc }}</p>
+<p>Added on: {{ author.addtime.strftime('%Y-%m-%d %H:%M') }}</p>
+<h2>News by this Author</h2>
+<ul>
+    {% for news_item in author.news %}
+    <li><a href="{{ url_for('news_detail', news_id=news_item.id) }}">{{ news_item.title }}</a></li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('author') }}">Back to Author List</a>
+{% endblock %}

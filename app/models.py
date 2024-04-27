@@ -226,6 +226,7 @@ class News(db.Model):
     image_filename = db.Column(db.String(120))
     author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    author = db.relationship('Author', backref='news_items')
 
 class Inventory(db.Model):
     __tablename__ = 'inventory'

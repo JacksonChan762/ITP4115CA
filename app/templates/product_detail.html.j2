@@ -4,7 +4,7 @@
   <div class="row">
     <!-- 左側：產品圖片 -->
     <div class="col-md-6">
-      <img src="{{ url_for('static', filename='thumbnails/' + product.image_filename) }}" alt="{{ product.name }}" class="img-fluid">
+      <img src="{{ url_for('static', filename='photo/' + product.image_filename) }}" alt="{{ product.name }}" class="img-fluid">
     </div>
     <!-- 右側：產品細節 -->
     <div class="col-md-6">
@@ -12,10 +12,12 @@
       <p>{{ product.description }}</p>
       <h3>價格：${{ product.price }}</h3>
       <!-- 加入購物車表單 -->
-      <form action="{{ url_for('cart_add') }}" method="get">
-          <input type="hidden" name="product_id" value="{{ product.id }}">
-          <button class="btn btn-success" type="submit">加入到購物車</button>
-      </form>
+            <form action="{{ url_for('cart_add') }}" method="get">
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+              <input type="number" name="number" value="1" min="1" readonly class="form-control" placeholder="number" aria-label="number">
+              <div class="input-group-append">
+                <button class="btn btn-success" type="submit">加入到購物車</button>
+            </form>
       <!-- 庫存信息 -->
       <h2>Inventory:</h2>
       <ul>

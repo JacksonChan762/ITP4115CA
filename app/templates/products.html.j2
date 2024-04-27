@@ -41,7 +41,7 @@
                 {% for product in products %}
                 <div class="col-md-4">
                     <div class="card">
-                        <img class="card-img-top" src="{{ url_for('static', filename='thumbnails/' + product.image_filename) }}" alt="{{ product.name }}">
+                        <img class="card-img-top" src="{{ url_for('static', filename='photosmall/' + product.image_filename) }}" alt="{{ product.name }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ product.name }}</h5>
                             <p class="card-text">{{ product.description }}</p>

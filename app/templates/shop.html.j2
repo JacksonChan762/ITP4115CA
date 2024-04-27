@@ -7,9 +7,6 @@
         {% for s in shop %}
         <li>
             {{ s.desc }} - {{ s.tel }} - {{ s.email }} - {{ s.address }}
-                <input type="hidden" name="id" value="{{ s.id }}">
-                <input type="submit" value="Delete">
-            </form>
         </li>
         {% endfor %}
     </ul>

@@ -13,7 +13,7 @@
     <h1>{{ news_item.title }}</h1>
     <div>
         {% if news_item.image_filename %}
-            <img src="{{ url_for('static', filename='images/' + news_item.image_filename) }}" alt="News Image" style="width: 100%; height: auto;">
+            <img src="{{ url_for('static', filename='news/' + news_item.image_filename) }}" alt="News Image" style="width: 100%; height: auto;">
         {% else %}
             <img src="{{ url_for('static', filename='images/no-image.png') }}" alt="No image available" style="width: 100%; height: auto;">
         {% endif %}
@@ -24,7 +24,7 @@
     <div>
         <p>Published on: {{ news_item.addtime.strftime('%Y-%m-%d %H:%M') }}</p>
         {% if news_item.author %}
-            <p>Author: {{ news_item.author.name }}</p>
+            <p>Author: <a href="{{ url_for('author', author_id=news_item.author.id) }}">{{ news_item.author.name }}</a></p>
         {% else %}
             <p>Author: Unknown</p>
         {% endif %}
