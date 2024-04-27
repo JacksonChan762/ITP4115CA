@@ -1,18 +1,55 @@
-<table class="table table-hover">
-    <tr>
-        <td width="70px">
-            <a href="{{ url_for('user', username=post.author.username) }}">
-                <img src="{{ post.author.avatar(70) }}"/>
-            </a>
-        </td>
-        <td>
-            {% set user_link %}
-            <a href="{{ url_for('user', username=post.author.username) }}">{{ post.author.username }}</a>
-        {% endset %}
-        {{ _('%(username)s said %(when)s',
-        username=user_link, when=moment(post.timestamp).fromNow()) }}
-        <br/>
-        {{ post.body }}
-    </td>
-</tr>
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post</title>
+    <style>
+        /* CSS styles for the post page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .avatar {
+            width: 70px;
+        }
+        .username {
+            font-weight: bold;
+        }
+        .timestamp {
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table class="table table-hover">
+            <tr>
+                <td width="70px">
+                    <a href="{{ url_for('user', username=post.author.username) }}">
+                        <img class="avatar" src="{{ post.author.avatar(70) }}" alt="Avatar">
+                    </a>
+                </td>
+                <td>
+                    <p>
+                        <span class="username">
+                            <a href="{{ url_for('user', username=post.author.username) }}">{{ post.author.username }}</a>
+                        </span>
+                        said
+                        <span class="timestamp">{{ moment(post.timestamp).fromNow() }}</span>
+                    </p>
+                    <p>{{ post.body }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
