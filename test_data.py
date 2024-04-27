@@ -75,7 +75,7 @@ def add_test_data():
 
     # 創建兩個新聞
     news1 = News(title='News One', content='Content of News One', author_id=author1.id , image_filename='news1.jpg' , addtime=datetime.now() , author=author1 ,product_id=1)
-    news2 = News(title='News Two', content='Content of News Two', author_id=author2.id, image_filename='news2.jpg', addtime=datetime.now() , author=author2 ,product_id=2)
+    news2 = News(title='News Two', content='Content of News Two', author_id=author2.id, image_filename='news2.jpg', addtime=datetime.now() , author=author2 )
 
     # Add to session and commit
     db.session.add_all([user1, user2, post1, post2, supercat1, supercat2, supercat3, supercat4, subcat1, subcat2, subcat3, subcat4, subcat5, subcat6, subcat7, subcat8, subcat9, product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11, product12, cart1, order1, order_detail1, shop1, author1, author2, news1, news2])

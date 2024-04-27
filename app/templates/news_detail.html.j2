@@ -3,21 +3,39 @@
 {% block title %}{{ news_item.title }}{% endblock %}
 
 {% block header %}
-    <a href="{{ url_for('news_list') }}">Back to News List</a>
+    <div>
+        <a href="{{ url_for('news_list') }}" style="text-decoration: none; color: blue;">← Back to News List</a>
+    </div>
 {% endblock %}
 
 {% block content %}
+<div>
     <h1>{{ news_item.title }}</h1>
-    {% if news_item.image_filename %}
-        <img src="{{ url_for('static', filename='images/' + news_item.image_filename) }}" alt="News Image">
-    {% else %}
-        <img src="{{ url_for('static', filename='images/no-image.png') }}" alt="No image available">
-    {% endif %}
-    <p>{{ news_item.content }}</p>
-    <p>Published on: {{ news_item.addtime.strftime('%Y-%m-%d %H:%M') }}</p>
-    {% if news_item.author %}
-        <p>Author: {{ news_item.author.name }}</p>
-    {% else %}
-        <p>Author: Unknown</p>
-    {% endif %}
+    <div>
+        {% if news_item.image_filename %}
+            <img src="{{ url_for('static', filename='images/' + news_item.image_filename) }}" alt="News Image" style="width: 100%; height: auto;">
+        {% else %}
+            <img src="{{ url_for('static', filename='images/no-image.png') }}" alt="No image available" style="width: 100%; height: auto;">
+        {% endif %}
+    </div>
+    <div>
+        <p>{{ news_item.content }}</p>
+    </div>
+    <div>
+        <p>Published on: {{ news_item.addtime.strftime('%Y-%m-%d %H:%M') }}</p>
+        {% if news_item.author %}
+            <p>Author: {{ news_item.author.name }}</p>
+        {% else %}
+            <p>Author: Unknown</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Comments Section -->
+<div>
+    <h2>Comments</h2>
+    <p>No comments yet.</p>
+    <!-- Future implementation of comments could go here -->
+</div>
+
 {% endblock %}

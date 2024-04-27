@@ -6,7 +6,7 @@ from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , News
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , News ,Comment
 from werkzeug.utils import secure_filename
 from PIL import Image
 import jinja2
@@ -473,3 +473,12 @@ def search():
 def newproduct():
     products = Product.query.order_by(desc(Product.addtime)).all()
     return render_template('newproduct.html.j2', products=products)
+
+
+@app.route('/add_comment/<int:news_id>', methods=['POST'])
+def add_comment(news_id):
+    content = request.form.get('content')
+    comment = Comment(content=content, news_id=news_id)
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('news_detail', news_id=news_id))
