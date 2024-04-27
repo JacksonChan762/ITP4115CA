@@ -219,10 +219,10 @@ def products():
     return render_template('products.html.j2', supercats=supercats, products=products, supercat_name=supercat_name, subcat_name=subcat_name)
 
 
-# 當您需要顯示產品詳情時，可以添加一個路由
+
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
-    # 根據產品ID從資料庫獲取產品
+   
     product = Product.query.get_or_404(product_id)
     inventories = Inventory.query.filter_by(product_id=product_id).all()
     return render_template('product_detail.html.j2', product=product , inventories=inventories)
@@ -251,31 +251,31 @@ def subcat_list():
     return render_template('subcat_list.html.j2', subcats=subcats)
   
 
-# 添加购物车
+
 @app.route("/cart_add/")
 @login_required
 def cart_add():
     cart = Cart(
         product_id=request.args.get('product_id'),
         number=request.args.get('number'),
-        user_id=session.get('user_id')  # 获取用户ID,判断用户是否登录
+        user_id=session.get('user_id')  
     )
-    db.session.add(cart)  # 添加数据
-    db.session.commit()  # 提交数据
+    db.session.add(cart) 
+    db.session.commit() 
     return redirect(url_for('shopping_cart'))
 
 
-# 清空购物车
+
 @app.route("/cart_clear/")
 @login_required
 def cart_clear():
-    user_id = session.get('user_id')  # 获取用户ID,判断用户是否登录
+    user_id = session.get('user_id')
     Cart.query.filter_by(user_id=user_id).delete()
     db.session.commit()
     return redirect(url_for('shopping_cart'))
 
 
-# 查看购物车
+
 @app.route("/shopping_cart/")
 @login_required
 def shopping_cart():
@@ -285,31 +285,31 @@ def shopping_cart():
     return render_template('shopping_cart.html.j2', cart=cart , total=total)
 
 
-# 删除购物车
+
 @app.route("/cart_delete/<int:id>/")
 @login_required
 def cart_delete(id=None):
-    user_id = session.get('user_id')  # 获取用户ID,判断用户是否登录
+    user_id = session.get('user_id')  
     db.session.delete(Cart.query.filter_by(user_id=user_id, product_id=id).first())
     db.session.commit()
     return redirect(url_for('shopping_cart'))
 
 
 
-# 购物车添加订单
+
 @app.route("/cart_order/", methods=['GET', 'POST'])
 @login_required
 def cart_order():
     
     if request.method == 'POST':
-        user_id = session.get('user_id')  # 获取用户id
-        # 添加订单
+        user_id = session.get('user_id')  
+       
         orders = Orders(
             user_id=user_id,
         )
-        db.session.add(orders)  # 添加数据
-        db.session.commit()  # 提交数据_
-        # 添加订单详情
+        db.session.add(orders)  
+        db.session.commit()  
+        
         cart = Cart.query.filter_by(user_id=user_id).all()
         object = []
         for item in cart:
@@ -318,8 +318,8 @@ def cart_order():
                 OrdersDetail(
                     order_id=orders.id,
                     product_id=item.product_id,
-                    order_name=product.name,  # 從 Product 模型中獲取產品名稱
-                    number=item.number,  # 從 Cart 模型中獲取數量
+                    order_name=product.name,  
+                    number=item.number, 
                 )
             )
         db.session.add_all(object)
@@ -327,7 +327,7 @@ def cart_order():
         db.session.commit()
     return redirect(url_for('order_list'))
 
-# 查看我的订单
+
 @app.route("/order_list", methods=['GET', 'POST'])
 @login_required
 def order_list():
@@ -341,32 +341,32 @@ def order_detail(id=None):
     orders = OrdersDetail.query.filter_by(order_id=id).all()
     return render_template('order_detail.html.j2', orders=orders)
 
-# 收藏与取消收藏商品
+
 @app.route("/collect_add/")
 @login_required
 def collect_add():
-    product_id = request.args.get("product_id", "")  # 接收传递的参数
-    user_id = session.get('user_id', 0)  # 获取当前用户的ID
-    collect = Collect.query.filter_by(  # 根据用户ID和商品ID判断是否该收藏
+    product_id = request.args.get("product_id", "")  
+    user_id = session.get('user_id', 0) 
+    collect = Collect.query.filter_by(  
         user_id=int(user_id),
         product_id=int(product_id)
     ).count()
 
-    # 已收藏,取消收藏
+    
     if collect == 1:
-        c = Collect.query.filter_by(product_id=product_id, user_id=user_id).first()  # 查找Collect表，查看记录是否存在
-        db.session.delete(c)  # 删除数据
-        db.session.commit()  # 提交数据
+        c = Collect.query.filter_by(product_id=product_id, user_id=user_id).first() 
+        db.session.delete(c) 
+        db.session.commit()  
         return redirect(url_for('product_detail', product_id=product_id))
 
-    # 未收藏进行收藏
+  
     if collect == 0:
         collect = Collect(
             user_id=int(user_id),
             product_id=int(product_id)
         )
-        db.session.add(collect)  # 添加数据
-        db.session.commit()  # 提交数据
+        db.session.add(collect)  
+        db.session.commit()  
         return redirect(url_for('product_detail', product_id=product_id) )
     
 
@@ -385,7 +385,7 @@ def collect_list():
 @app.route("/collect_delete/<int:id>/")
 @login_required
 def collect_delete(id=None):
-    user_id = session.get('user_id', 0)  # 获取用户ID,判断用户是否登录
+    user_id = session.get('user_id', 0)  
     db.session.delete(Collect.query.filter_by(user_id=user_id, product_id=id).first())
     db.session.commit()
     return redirect(url_for('collect_list'))
@@ -419,9 +419,9 @@ def product_edit(id=None):
 
 @app.route('/shop')
 def shops():
-    # 從數據庫中查詢所有的 Shop 紀錄
+
     shops = Shop.query.all()
-    # 將查詢結果傳遞給模板
+
     return render_template('shop.html.j2', shop=shops)
 
 

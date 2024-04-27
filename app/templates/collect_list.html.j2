@@ -6,7 +6,7 @@
       {% for collect in collects %}
         <li>
           <h2>{{ collect.product.name }}</h2>
-            <img src="{{ url_for('static', filename='thumbnails/' + collect.product.image_filename) }}" alt="{{ collect.product.name }}">
+            <img src="{{ url_for('static', filename='photosmall/' + collect.product.image_filename) }}" alt="{{ collect.product.name }}">
             <a href="{{ url_for('collect_delete', id=collect.product.id) }}" class="btn btn-success">Remove from Collection</a>
           <!-- 顯示其他產品資訊 -->
         </li>
@@ -16,7 +16,7 @@
     <div class="empty-collect-container">
       <h2>Your Collection is Empty</h2>
       <p>You have not collected any items yet.</p>
-      <a href="">Browse Items</a>
+      <a href="{{url_for('products')}}">Browse Items</a>
     </div>
   {% endif %}
 {% endblock %}

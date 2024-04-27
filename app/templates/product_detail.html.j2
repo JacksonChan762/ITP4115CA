@@ -12,12 +12,17 @@
       <p>{{ product.description }}</p>
       <h3>價格：${{ product.price }}</h3>
       <!-- 加入購物車表單 -->
-            <form action="{{ url_for('cart_add') }}" method="get">
-              <input type="hidden" name="product_id" value="{{ product.id }}">
-              <input type="number" name="number" value="1" min="1" readonly class="form-control" placeholder="number" aria-label="number">
-              <div class="input-group-append">
-                <button class="btn btn-success" type="submit">加入到購物車</button>
-            </form>
+      <form action="{{ url_for('cart_add') }}" method="get">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <input type="number" name="number" value="1" min="1" readonly class="form-control" placeholder="number" aria-label="number">
+        <div class="input-group-append">
+          <button class="btn btn-success" type="submit">加入到購物車</button>
+      </form>
+      <!-- 加入收藏表單 -->
+      <form action="{{ url_for('collect_add') }}" method="get">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <button class="btn btn-primary" type="submit">加入收藏</button>
+      </form>
       <!-- 庫存信息 -->
       <h2>Inventory:</h2>
       <ul>
