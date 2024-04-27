@@ -1,80 +1,202 @@
 {% extends 'bootstrap/base.html' %}
-
 {% block title %}
     {% if title %}
         {{ title }} - BoardWay
     {% else %}
-        {{ _('Welcome to BoardWay') }}
+        {{ _('歡迎來到BoardWay') }}
     {% endif %}
 {% endblock %}
 {% block navbar %}
+    <nav class="navbar navbar-default">
+                <a class="navbar-brand" href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='image/logo.jpg') }}" width="218" height="100" alt="{{BoardWay_logo}}"></a>
+        <div class="container-fluid">
+            <!-- 第一行：登錄 -->
+            <div class="navbar-header">
+                <button type="button"
+                        class="navbar-toggle collapsed"
+                        data-toggle="collapse"
+                        data-target="#bs-navbar-collapse-1"
+                        aria-expanded="false">
+                    <span class="sr-only">切換導航</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_anonymous %}
+                        <li>
+                            <a href="{{ url_for('login') }}">{{ _('登錄') }}</a>
+                        </li>
+                    {% else %}
 
-<nav class="navbar navbar-default">
-<div class="navbar navbar">
-<ul class="nav navbar-nav navbar-right">
-    {% if current_user.is_anonymous %}
-         <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
-    {% else %}
         <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.username }} <span class="caret"></span></a>
         <ul class="dropdown-menu">
         <li><a href="{{ url_for('user', username=current_user.username) }}">{{ _('Profile') }}</a></li>
          <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
          </ul>
-        </li>
-        {% endif %}
-</div>
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button"
-                    class="navbar-toggle collapsed"
-                    data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1"
-                    aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='image/logo.jpg') }}" width="90" height="30" alt="{{BoardWay_logo}}"></a>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- 第二行：主要導航和搜索 -->
+            <div class="collapse navbar-collapse" id="bs-navbar-collapse-2">
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{{ url_for('explore') }}">探索</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('products') }}">產品</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('shopping_cart') }}">購物車</a>
+                    </li>
+                    <li>
+                        <form class="navbar-form"
+                              role="search"
+                              action="{{ url_for('search') }}"
+                              method="get">
+                            <div class="form-group">
+                                <input type="text"
+                                       name="keywords"
+                                       class="form-control"
+                                       placeholder="搜索產品...">
+                            </div>
+                            <button type="submit" class="btn btn-default">搜索</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            <!-- 第三行：九個下拉式選單 -->
+            <div class="collapse navbar-collapse" id="bs-navbar-collapse-3">
+                <ul class="nav navbar-nav ">
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            手機產品 <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#">智能手機</a>
+                            </li>
+                            <li>
+                                <a href="#">攝影產品</a>
+                            </li>
+                            <li>
+                                <a href="#">電腦產品</a>
+                            </li>
+                            <li>
+                                <a href="#">電腦周邊</a>
+                            </li>
+                            </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('explore') }}">新品速遞</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('explore') }}">推廣優惠</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            品牌專區 <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#">}</a>
+                            </li>
+                            <li>
+                                <a href="#"></a>
+                            </li>
+                            <li>
+                                <a href="#"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('explore') }}">探索</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            下拉式選單 <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#">}</a>
+                            </li>
+                            <li>
+                                <a href="#"></a>
+                            </li>
+                            <li>
+                                <a href="#"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('explore') }}">會員專區</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            點解你要知 <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#"> }</a>
+                            </li>
+                            <li>
+                                <a href="#"> </a>
+                            </li>
+                            <li>
+                                <a href="#"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('explore') }}">學生優惠</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('explore') }}">遊戲機</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('explore') }}">公司簡介</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-            <li><a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='image/home.jpg') }}" width="30" height="30" alt="{{home}}"></a></li>
-                <li><a href="{{ url_for('explore') }}"><img src="{{ url_for('static', filename='image/post.jpg') }}" width="30" height="30" alt="{{explore}}"></a></li>
-                <li><a href="{{ url_for('products') }}"><img src="{{ url_for('static', filename='image/order_from.jpg') }}" width="30" height="30" alt="{{order_from}}"></a></li>
-                <li><a href="{{ url_for('shopping_cart') }}"><img src="{{ url_for('static', filename='image/info.jpg') }}" width="30" height="30" alt="{{order_info}}"></a></li>
-                <form class="navbar-form navbar-right" role="search" action="{{url_for('search')}}">
-                <div class="form-group">
-
-    <form action="{{ url_for('search') }}" method="get">
-        <input type="text" name="keywords" placeholder="Search products..." value="{{ keywords }}">
-        <button type="submit" class="btn btn-default">Submit</button>
-    </form>
-                </div>
-                </div>
-    <div class="navbar navbar">
-    <div class="navbar">
-            <li class="dropdown">
-        <a href="{{url_for('products')}}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">product<span class="caret"></span></a>
-        <ul class="dropdown-menu">
-        <li>1</a></li>
-         <li>1</a></li>
-         </ul>
-        </li>
-
-
-
-</nav>
+    </nav>
 {% endblock %}
 {% block content %}
     <div class="container">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                {% for message in messages %}<div class="alert alert-info" role="alert">{{ message }}</div>{% endfor %}
+                {% for message in messages %}
+                    <div class="alert alert-info" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
         {% endwith %}
-        {# application content needs to be provided in the app_content block #}
         {% block app_content %}{% endblock %}
     </div>
 {% endblock %}
@@ -83,15 +205,15 @@
     {{ moment.include_moment() }}
     {{ moment.lang(g.locale) }}
     <script>
-$(document).ready(function() {
-    $('.dropdown').hover(
-        function() {
-            $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
-        },
-        function() {
-            $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
-        }
-    );
-});
-</script>
+    $(document).ready(function() {
+        $('.dropdown').hover(
+            function() {
+                $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
+            },
+            function() {
+                $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
+            }
+        );
+    });
+    </script>
 {% endblock %}
