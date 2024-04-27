@@ -1,4 +1,5 @@
 {% extends 'bootstrap/base.html' %}
+
 {% block title %}
     {% if title %}
         {{ title }} - BoardWay
@@ -7,53 +8,64 @@
     {% endif %}
 {% endblock %}
 {% block navbar %}
-    <nav class="navbar navbar-default">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button"
-                        class="navbar-toggle collapsed"
-                        data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1"
-                        aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='image/logo.jpg') }}" width="90" height="30" alt="{{BoardWay_logo}}"></a>
-            </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='image/home.jpg') }}" width="30" height="30" alt="{{home}}"></a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('explore') }}"><img src="{{ url_for('static', filename='image/post.jpg') }}" width="30" height="30" alt="{{explore}}"></a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('products') }}"><img src="{{ url_for('static', filename='image/order_from.jpg') }}" width="30" height="30" alt="{{order_from}}"></a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('shopping_cart') }}"><img src="{{ url_for('static', filename='image/info.jpg') }}" width="30" height="30" alt="{{order_info}}"></a>
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    {% if current_user.is_anonymous %}
-                        <li>
-                            <a href="{{ url_for('login') }}">{{ _('Login') }}</a>
-                        </li>
-                    {% else %}
-                        <li>
-                            <a href="{{ url_for('user', username=current_user.username) }}">{{ _('Profile') }}</a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='image/login.png') }}" width="30" height="30" alt="{{logout}}"></a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+
+<nav class="navbar navbar-default">
+<div class="navbar navbar">
+<ul class="nav navbar-nav navbar-right">
+    {% if current_user.is_anonymous %}
+         <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
+    {% else %}
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.username }} <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+        <li><a href="{{ url_for('user', username=current_user.username) }}">{{ _('Profile') }}</a></li>
+         <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
+         </ul>
+        </li>
+        {% endif %}
+</div>
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1"
+                    aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='image/logo.jpg') }}" width="90" height="30" alt="{{BoardWay_logo}}"></a>
         </div>
-    </nav>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='image/home.jpg') }}" width="30" height="30" alt="{{home}}"></a></li>
+                <li><a href="{{ url_for('explore') }}"><img src="{{ url_for('static', filename='image/post.jpg') }}" width="30" height="30" alt="{{explore}}"></a></li>
+                <li><a href="{{ url_for('products') }}"><img src="{{ url_for('static', filename='image/order_from.jpg') }}" width="30" height="30" alt="{{order_from}}"></a></li>
+                <li><a href="{{ url_for('shopping_cart') }}"><img src="{{ url_for('static', filename='image/info.jpg') }}" width="30" height="30" alt="{{order_info}}"></a></li>
+                <form class="navbar-form navbar-right" role="search" action="{{url_for('search')}}">
+                <div class="form-group">
+
+    <form action="{{ url_for('search') }}" method="get">
+        <input type="text" name="keywords" placeholder="Search products..." value="{{ keywords }}">
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+                </div>
+                </div>
+    <div class="navbar navbar">
+    <div class="navbar">
+            <li class="dropdown">
+        <a href="{{url_for('products')}}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">product<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+        <li>1</a></li>
+         <li>1</a></li>
+         </ul>
+        </li>
+
+
+
+</nav>
 {% endblock %}
 {% block content %}
     <div class="container">
@@ -70,4 +82,16 @@
     {{ super() }}
     {{ moment.include_moment() }}
     {{ moment.lang(g.locale) }}
+    <script>
+$(document).ready(function() {
+    $('.dropdown').hover(
+        function() {
+            $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
+        },
+        function() {
+            $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
+        }
+    );
+});
+</script>
 {% endblock %}
