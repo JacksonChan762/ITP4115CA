@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Shop</title>
-</head>
-<body>
+{% extends "base.html.j2" %}
+{% block app_content %}
     <h1>Edit Shop</h1>
     <form method="post">
         Description: <input type="text" name="desc" value="{{ shop.desc }}" required><br>
@@ -13,5 +9,4 @@
         <input type="submit" value="Update Shop">
     </form>
     <a href="{{ url_for('shops') }}">Back to Shops List</a>
-</body>
-</html>
+{% endblock %}
