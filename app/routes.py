@@ -473,3 +473,7 @@ def search():
 def newproduct():
     products = Product.query.order_by(desc(Product.addtime)).all()
     return render_template('newproduct.html.j2', products=products)
+
+@app.route('/information')
+def information():
+    return render_template('information.html.j2')
