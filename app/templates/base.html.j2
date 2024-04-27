@@ -119,19 +119,25 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="#"> }</a>
+                                <a href="{{ url_for('washing_machine') }}"> 洗衣機點揀你要知</a>
                             </li>
                             <li>
-                                <a href="#"> </a>
+                                <a href="{{ url_for('oral_care') }}"> 口腔護理你要知</a>
                             </li>
                             <li>
-                                <a href="#"></a>
+                                <a href="{{ url_for('Dehumidifier') }}"> 抽濕機點揀你要知</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('Air_conditioner') }}"> 冷氣機點揀你要知</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('Refrigerator') }}"> 雪櫃點揀你要知</a>
                             </li>
                         </ul>
                     </li>
 
                     <li>
-                        <a href="{{ url_for('explore') }}">公司簡介</a>
+                        <a href="{{ url_for('information') }}">公司簡介</a>
                     </li>
                 </ul>
             </div>

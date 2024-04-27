@@ -474,6 +474,7 @@ def newproduct():
     products = Product.query.order_by(desc(Product.addtime)).all()
     return render_template('newproduct.html.j2', products=products)
 
+<<<<<<< HEAD
 
 @app.route('/add_comment/<int:news_id>', methods=['POST'])
 def add_comment(news_id):
@@ -482,3 +483,28 @@ def add_comment(news_id):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('news_detail', news_id=news_id))
+=======
+@app.route('/information')
+def information():
+    return render_template('information.html.j2')
+
+@app.route('/washing_machine')
+def washing_machine():
+    return render_template('washing_machine.html.j2')
+
+@app.route('/Air_conditioner')
+def Air_conditioner():
+    return render_template('Air_conditioner.html.j2')
+
+@app.route('/Dehumidifier')
+def Dehumidifier():
+    return render_template('Dehumidifier.html.j2')
+
+@app.route('/oral_care')
+def oral_care():
+    return render_template('oral_care.html.j2')
+
+@app.route('/Refrigerator')
+def Refrigerator():
+    return render_template('Refrigerator.html.j2')
+>>>>>>> 204fc9f3d4cec7d6c9032050204a6b9c391feefe
