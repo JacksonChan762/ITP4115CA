@@ -508,3 +508,23 @@ def oral_care():
 def Refrigerator():
     return render_template('Refrigerator.html.j2')
 
+@app.route('/post')
+def all_posts():
+    post = Post.query.all()
+    return render_template('post.html.j2', post=post)
+
+@app.route('/post/<int:post_id>')
+def single_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html.j2', post=post)
+
+@app.route('/post/new', methods=['GET', 'POST'])
+def new_post():
+    if request.method == 'POST':
+        post_title = request.form.get('title')
+        post_body = request.form.get('body')
+        new_post = Post(title=post_title, body=post_body, author=current_user)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('create_post.htm.j2')
