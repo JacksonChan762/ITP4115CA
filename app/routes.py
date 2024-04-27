@@ -477,3 +477,23 @@ def newproduct():
 @app.route('/information')
 def information():
     return render_template('information.html.j2')
+
+@app.route('/washing_machine')
+def washing_machine():
+    return render_template('washing_machine.html.j2')
+
+@app.route('/Air_conditioner')
+def Air_conditioner():
+    return render_template('Air_conditioner.html.j2')
+
+@app.route('/Dehumidifier')
+def Dehumidifier():
+    return render_template('Dehumidifier.html.j2')
+
+@app.route('/oral_care')
+def oral_care():
+    return render_template('oral_care.html.j2')
+
+@app.route('/Refrigerator')
+def Refrigerator():
+    return render_template('Refrigerator.html.j2')
