@@ -107,6 +107,7 @@ class Product(db.Model):
     orders_detail = db.relationship("OrdersDetail", backref='product')  # 订单外键关系关联
     supercat_id = db.Column(db.Integer, db.ForeignKey('supercat.id'), nullable=False)
     subcat_id = db.Column(db.Integer, db.ForeignKey('subcat.id'), nullable=False)
+
     
    # 店铺外键关系关联
     
@@ -216,3 +217,4 @@ class News(db.Model):
     image_filename = db.Column(db.String(120), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
     author = db.relationship('Author', backref='news_items')
+    

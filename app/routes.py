@@ -452,8 +452,6 @@ def news_list():
 @app.route('/news_list/<int:news_id>')
 def news_detail(news_id):
     news_item = News.query.get(news_id)
-    if news_item is None:
-        abort(404)
     return render_template('news_detail.html.j2', news_item=news_item)
 
 @app.route('/search')
