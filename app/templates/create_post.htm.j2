@@ -4,8 +4,9 @@
 {% block app_content %}
 <div class="container mt-4">
     <h2>Create New Post</h2>
-    <form method="post">
+    <form method="POST">
         {{ wtf.quick_form(form) }}
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 {% endblock %}

@@ -219,3 +219,4 @@ class News(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
 
+

@@ -518,13 +518,13 @@ def single_post(post_id):
     post = Post.query.get_or_404(post_id)
     return render_template('post.html.j2', post=post)
 
-@app.route('/post/new', methods=['GET', 'POST'])
+
+@app.route('/new_post', methods=['GET', 'POST'])
 def new_post():
-    if request.method == 'POST':
-        post_title = request.form.get('title')
-        post_body = request.form.get('body')
-        new_post = Post(title=post_title, body=post_body, author=current_user)
-        db.session.add(new_post)
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(title=form.title.data, content=form.content.data, date_posted=datetime.utcnow())
+        db.session.add(post)
         db.session.commit()
-        return redirect(url_for('index'))
-    return render_template('create_post.htm.j2')
+        return redirect(url_for('home'))
+    return render_template('create_post.htm.j2', form=form)

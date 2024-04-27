@@ -1,15 +1,10 @@
-{% extends "base.html.j2" %}
-{% import 'bootstrap/wtf.html' as wtf %}
-
-{% block app_content %}
 {% for post in posts %}
     <div class="container mt-4">
         <h2>{{ post.title }}</h2>
-        <p><strong>Date:</strong> {{ post.date_posted.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p><strong>Date:</strong> {{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
         <p><strong>Author:</strong> {{ post.author }}</p>
         <div class="post-content">
             {{ post.content | safe }}
         </div>
     </div>
 {% endfor %}
-{% endblock %}
