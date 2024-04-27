@@ -3,7 +3,7 @@ from logging.handlers import RotatingFileHandler, SMTPHandler
 import os
 from flask import Flask, request
 from app.config import Config
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy 
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail

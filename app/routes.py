@@ -12,6 +12,7 @@ from PIL import Image
 import jinja2
 import os
 import logging
+from sqlalchemy import desc
 
 
 @app.before_request
@@ -193,11 +194,29 @@ def format_currency(value):
     
 
 
-
-@app.route('/products')
+@app.route('/products' , methods=['GET', 'POST'])
 def products():
+    supercat_id = request.args.get('supercat_id', type=int, default=None)
+    subcat_id = request.args.get('subcat_id', type=int, default=None)
+    supercat_name = None
+    subcat_name = None
+    
+    if supercat_id:
+        products = Product.query.filter_by(supercat_id=supercat_id).all()
+        supercat = SuperCat.query.filter_by(id=supercat_id).first()
+        if supercat:
+            supercat_name = supercat.cat_name
+    elif subcat_id:
+        products = Product.query.filter_by(subcat_id=subcat_id).all()
+        subcat = SubCat.query.filter_by(id=subcat_id).first()
+        if subcat:
+            subcat_name = subcat.cat_name
+            supercat_name = subcat.supercat.cat_name  # Assuming SubCat model has a reference to SuperCat
+    else:
+        products = []
+
     supercats = SuperCat.query.all()
-    return render_template('products.html.j2', supercats=supercats)
+    return render_template('products.html.j2', supercats=supercats, products=products, supercat_name=supercat_name, subcat_name=subcat_name)
 
 
 # 當您需要顯示產品詳情時，可以添加一個路由
@@ -222,6 +241,7 @@ def get_subcategories(supercat_id):
 @app.route("/supercat/list/", methods=["GET"])
 def supercat_list():
     supercats = SuperCat.query.all()
+    
     return render_template('supercat_list.html.j2', supercats=supercats)
 
 @app.route("/subcat/list/", methods=["GET"])
@@ -449,3 +469,9 @@ def search():
             Product.addtime.desc()
         ).paginate(page=page, per_page=12)
     return render_template("search.html.j2", page_data=page_data, keywords=keywords)
+
+
+@app.route('/newproduct')
+def newproduct():
+    products = Product.query.order_by(desc(Product.addtime)).all()
+    return render_template('newproduct.html.j2', products=products)
