@@ -24,7 +24,6 @@ def before_request():
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-@login_required
 
 def index():
     product = Product.query.all()
