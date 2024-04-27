@@ -107,8 +107,7 @@ class Product(db.Model):
     orders_detail = db.relationship("OrdersDetail", backref='product')  # 订单外键关系关联
     supercat_id = db.Column(db.Integer, db.ForeignKey('supercat.id'), nullable=False)
     subcat_id = db.Column(db.Integer, db.ForeignKey('subcat.id'), nullable=False)
-    news_id = db.Column(db.Integer, db.ForeignKey('news.id'), nullable=True)  # 新闻外键关系关联
-    comments = db.relationship('Comment', backref='product', lazy='dynamic')
+
    # 店铺外键关系关联
     
     def __repr__(self):
@@ -210,20 +209,12 @@ class Author(db.Model):
     news = db.relationship('News')
 
 class News(db.Model):
+    __tablename__ = 'news'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    content = db.Column(db.Text)
-    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
-    image_filename = db.Column(db.String(120), nullable=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
-    author = db.relationship('Author', backref='news_items')
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=True)
-    comments = db.relationship('Comment', backref='news', lazy='dynamic')
-
-
-class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    posted_at = db.Column(db.DateTime, default=datetime.utcnow)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=True)
-    news_id = db.Column(db.Integer, db.ForeignKey('news.id'), nullable=True)
+    addtime = db.Column(db.DateTime, default=datetime.now)
+    image_filename = db.Column(db.String(120))
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+
