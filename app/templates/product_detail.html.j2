@@ -8,13 +8,21 @@
     </div>
     <!-- 右側：產品細節 -->
     <div class="col-md-6">
-      <h2>{{ product.name }}</h2>
+      <h1>{{ product.name }}</h1>
       <p>{{ product.description }}</p>
-<form action="{{ url_for('cart_add') }}" method="get">
-    <input type="hidden" name="product_id" value="{{ product.id }}">
-    <button class="btn btn-success" type="submit">加入到購物車</button>
-</form>
       <h3>價格：${{ product.price }}</h3>
+      <!-- 加入購物車表單 -->
+      <form action="{{ url_for('cart_add') }}" method="get">
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <button class="btn btn-success" type="submit">加入到購物車</button>
+      </form>
+      <!-- 庫存信息 -->
+      <h2>Inventory:</h2>
+      <ul>
+      {% for inventory in inventories %}
+      <li>Shop: {{ inventory.shop.name }}, Quantity: {{ inventory.quantity }}</li>
+      {% endfor %}
+      </ul>
     </div>
   </div>
 </div>

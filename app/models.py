@@ -107,6 +107,9 @@ class Product(db.Model):
     orders_detail = db.relationship("OrdersDetail", backref='product')  # 订单外键关系关联
     supercat_id = db.Column(db.Integer, db.ForeignKey('supercat.id'), nullable=False)
     subcat_id = db.Column(db.Integer, db.ForeignKey('subcat.id'), nullable=False)
+    inventory = db.relationship("Inventory", backref='product')
+    shop_id = db.Column(db.Integer, db.ForeignKey('shop.id'))
+
 
    # 店铺外键关系关联
     
@@ -184,18 +187,22 @@ class OrdersDetail(db.Model):
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))  # 所属订单
     number = db.Column(db.Integer, default=0)  # 购买数量
     price = db.Column(db.Float, default=0)  # 价格
-    order_name = db.Column(db.String(100), nullable=True)  # 商品名称
+    order_name = db.Column(db.String(100), nullable=True)  
 
 
 
 
 class Shop(db.Model):
     __tablename__ = 'shop'
-    id = db.Column(db.Integer, primary_key=True)  # 编号
-    desc = db.Column(db.String(255), nullable=True)  # 商店描述
-    tel = db.Column(db.String(11), nullable=True)  # 联系电话
-    email = db.Column(db.String(100), nullable=True)  # 联系邮箱
-    address = db.Column(db.String(255), nullable=True)  # 商店地址
+    id = db.Column(db.Integer, primary_key=True)  
+    name = db.Column(db.String(100), nullable=False) 
+    desc = db.Column(db.String(255), nullable=True)  
+    tel = db.Column(db.String(11), nullable=True)  
+    email = db.Column(db.String(100), nullable=True)  
+    address = db.Column(db.String(255), nullable=True)  
+    inventory = db.relationship("Inventory", backref='shop')  
+    products_id = db.relationship("Product", backref='shop')  
+    
 
     def __repr__(self):
         return f"<Shop {self.id}>"
@@ -207,6 +214,8 @@ class Author(db.Model):
     desc = db.Column(db.String(200))
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     news = db.relationship('News')
+    
+
 
 class News(db.Model):
     __tablename__ = 'news'
@@ -218,3 +227,9 @@ class News(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
 
+class Inventory(db.Model):
+    __tablename__ = 'inventory'
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    shop_id = db.Column(db.Integer, db.ForeignKey('shop.id'), nullable=False)  # 新增的字段
+    quantity = db.Column(db.Integer, nullable=False)

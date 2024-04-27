@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Post, Product, SuperCat, SubCat, Cart, Collect, Orders, OrdersDetail, Author, News, Shop
+from app.models import User, Post, Product, SuperCat, SubCat, Cart, Collect, Orders, OrdersDetail, Author, News, Shop ,Inventory
 from datetime import datetime
 from datetime import date
 
@@ -67,7 +67,10 @@ def add_test_data():
     order_detail1 = OrdersDetail(product_id=1, order_id=1, number=1, price=999.99)
 
     # Create shop
-    shop1 = Shop(desc='Local Computer Store', tel='1234567890', email='info@localstore.com', address='123 Tech Ave')
+    shop1 = Shop(name='ABC Shop', desc='General merchandise store', tel='1234567890', email='abc@shop.com', address='123 Main St, Anytown')
+    shop2 = Shop(name='XYZ Mart', desc='Grocery store', tel='0987654321', email='xyz@mart.com', address='456 Oak Rd, Othertown')
+    shop3 = Shop(name='Tech World', desc='Electronics store', tel='5555555555', email='info@techworld.com', address='789 Maple Ave, Cityville') 
+
 
     # 創建兩個作者
     author1 = Author(name='Author One', desc='Description of Author One', addtime=datetime.now())
@@ -77,8 +80,16 @@ def add_test_data():
     news1 = News(title='News One', content='Content of News One', author_id=author1.id , image_filename='news1.jpg' , addtime=datetime.now())
     news2 = News(title='News Two', content='Content of News Two', author_id=author2.id, image_filename='news2.jpg', addtime=datetime.now())
 
+    # 創建庫存
+    inventory1 = Inventory(product=product1, shop=shop1, quantity=50)
+    inventory2 = Inventory(product=product2, shop=shop1, quantity=25)
+    inventory3 = Inventory(product=product3, shop=shop1, quantity=75)
+    inventory4 = Inventory(product=product1, shop=shop1, quantity=100)
+    inventory5 = Inventory(product=product2, shop=shop1, quantity=40)
+
+
     # Add to session and commit
-    db.session.add_all([user1, user2, post1, post2, supercat1, supercat2, supercat3, supercat4, subcat1, subcat2, subcat3, subcat4, subcat5, subcat6, subcat7, subcat8, subcat9, product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11, product12, cart1, order1, order_detail1, shop1, author1, author2, news1, news2])
+    db.session.add_all([user1, user2, post1, post2, supercat1, supercat2, supercat3, supercat4, subcat1, subcat2, subcat3, subcat4, subcat5, subcat6, subcat7, subcat8, subcat9, product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11, product12, cart1, order1, order_detail1, shop1, shop2, shop3, author1, author2, news1, news2, inventory1, inventory2, inventory3, inventory4, inventory5])
     db.session.commit()
 
     print('Test data added.')

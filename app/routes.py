@@ -6,7 +6,7 @@ from flask_babel import _, get_locale
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
     ResetPasswordRequestForm, ResetPasswordForm, OrderForm
-from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , News
+from app.models import User, Post, Product , Cart , Collect , Orders , OrdersDetail , SuperCat , SubCat ,Shop , Author , News ,Inventory
 from werkzeug.utils import secure_filename
 from PIL import Image
 import jinja2
@@ -224,7 +224,8 @@ def products():
 def product_detail(product_id):
     # 根據產品ID從資料庫獲取產品
     product = Product.query.get_or_404(product_id)
-    return render_template('product_detail.html.j2', product=product)
+    inventories = Inventory.query.filter_by(product_id=product_id).all()
+    return render_template('product_detail.html.j2', product=product , inventories=inventories)
 
 
 def allowed_file(filename):
@@ -507,4 +508,5 @@ def oral_care():
 @app.route('/Refrigerator')
 def Refrigerator():
     return render_template('Refrigerator.html.j2')
+
 
